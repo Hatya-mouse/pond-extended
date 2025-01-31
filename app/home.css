@@ -1,0 +1,13 @@
+/* Main container */
+.main-container {
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+}
+
+/* Left panel */
+.left-panel {
+    display: flex;
+    gap: 16px;
+    flex-flow: row;
+}
