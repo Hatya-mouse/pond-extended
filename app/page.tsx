@@ -1,101 +1,116 @@
-import Image from "next/image";
+"use client"
+
+// React imports
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+// UI Elements
+import * as Pond from "@pond-game/pond/pond";
+import PondGame from "@pond-game/pondGame";
+import SettingsView, { PondSettings } from "@pond/settingsView";
+import PageHeader from "@pond/pageHeader";
+const Editor = dynamic(() => import("@pond/editor"), { ssr: false });
+// CSS
+import "./globals.css";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    const [activeView, setActiveView] = useState("editor");
+    const [isDarkmode, setMode] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    // Settings
+    // The latest settings.
+    const [settings, setSettings] = useState<PondSettings>(new PondSettings());
+
+    // Scripts editor
+    const [doc, setDoc] = useState("");
+    const [, setSelectedAvatar] = useState(settings.avatars[0].id);
+    const [selectedAvatarData, setSelectedAvatarData] = useState<Pond.AvatarData>(settings.avatars[0]);
+
+    // Set up the editor's dark mode.
+    useEffect(() => {
+        if (!window.matchMedia) return;
+        // Get is it's dark mode.
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        // Set the initial value.
+        setMode(mediaQuery.matches);
+        // Callback function.
+        const handleChange = (event: MediaQueryListEvent) => {
+            setMode(event.matches);
+        };
+        // Observe the system theme changes.
+        mediaQuery.addEventListener("change", handleChange);
+        // Clean up.
+        return () => {
+            mediaQuery.removeEventListener("change", handleChange);
+        };
+    }, []);
+
+    // Load babel from CDN.
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/@babel/standalone/babel.min.js";
+        script.async = true;
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    const updateSettings = (newSettings: PondSettings) => {
+        setSettings(structuredClone(newSettings));
+    };
+
+    const onDocChange = (newDocument: string, avatarId: number) => {
+        const newScripts = settings.avatars.map((avatar: Pond.AvatarData, idx: number) => {
+            if (avatar.id === avatarId) return newDocument;
+            else return Pond.scripts[idx];
+        });
+        setDoc(newDocument);
+
+        setTimeout(() => {
+            Pond.setScripts([...newScripts]);
+        }, 50);
+    };
+
+    const getAvatarIndexFromId = (id: number) => {
+        return settings.avatars.findIndex(
+            (avatar: { id: number }) => avatar.id === id
+        );
+    };
+
+    const handleAvatarSelection = (id: number) => {
+        const idx = getAvatarIndexFromId(id);
+        setSelectedAvatar(id);
+        setSelectedAvatarData(settings.avatars[idx]);
+        setTimeout(() => {
+            setDoc(Pond.scripts[idx]);
+        }, 0);
+    };
+
+    return (
+        <div className={isDarkmode ? "dark" : ""}>
+            <PageHeader />
+            <div className={`flex gap-2 p-2`}>
+                {/* Don't use the same settings instance to avoid overwriting the settings. */}
+                <PondGame settings={settings} onAvatarSelect={handleAvatarSelection} />
+                {/* Pass the setter function of "doc" to the Editor element. */}
+                <Editor
+                    className={`grow ${activeView === "settings" && "hidden"}`}
+                    settings={settings}
+                    value={doc}
+                    setDoc={onDocChange}
+                    onToggleView={setActiveView}
+                    darkMode={isDarkmode}
+                    selectedAvatarData={selectedAvatarData}
+                />
+                <SettingsView
+                    className={`grow ${activeView === "editor" && "hidden"}`}
+                    onToggleView={setActiveView}
+                    darkMode={isDarkmode}
+                    onChangeSettings={updateSettings}
+                />
+            </div>
+            <div id="overlays"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }
