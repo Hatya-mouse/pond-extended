@@ -23,6 +23,24 @@ import "./pond.css";
 /** A list of completions. */
 let completions: Completion[] = [];
 
+const cmExtensions = [
+    basicSetup,
+    scrollPastEnd(),
+    javascript(),
+    lintGutter(),
+    linter(esLint(new esLintBrowserify.Linter(), { // ESLint configurations.
+        languageOptions: {
+            parserOptions: {
+                ecmaVersion: "latest",
+                sourceType: "module",
+            },
+        },
+    })),
+    javascriptLanguage.data.of({
+        autocomplete: pondCompletion,
+    })
+];
+
 export default function Editor({
     className = "",
     settings,
@@ -40,6 +58,7 @@ export default function Editor({
     darkMode?: boolean,
     selectedAvatarData: AvatarData,
 }) {
+    // Prettier worker.
     const worker = useRef<Worker | undefined>(undefined);
 
     // Called when the page is loaded.
@@ -123,23 +142,7 @@ export default function Editor({
                     value={value}
                     onChange={onChange}
                     // Pass the extensions to the CodeMirror editor.
-                    extensions={[
-                        basicSetup,
-                        scrollPastEnd(),
-                        javascript(),
-                        lintGutter(),
-                        linter(esLint(new esLintBrowserify.Linter(), { // ESLint configurations.
-                            languageOptions: {
-                                parserOptions: {
-                                    ecmaVersion: "latest",
-                                    sourceType: "module",
-                                },
-                            },
-                        })),
-                        javascriptLanguage.data.of({
-                            autocomplete: pondCompletion,
-                        })
-                    ]}
+                    extensions={cmExtensions}
                     // Set the theme.
                     theme={darkMode ? vscodeDark : vscodeLight}
                 />
