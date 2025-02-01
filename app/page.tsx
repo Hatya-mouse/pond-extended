@@ -11,7 +11,7 @@ import PondGame from "@pond-game/pondGame";
 import SettingsView from "@pond/settingsView";
 import PageHeader from "@pond/pageHeader";
 import Editor from "@pond/editor";
-import CreditView from "./ui/pond/creditView";
+import CreditView from "@pond/creditView";
 
 export default function Home() {
     const [activeView, setActiveView] = useState("editor");
