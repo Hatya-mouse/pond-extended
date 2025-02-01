@@ -61,8 +61,10 @@ export default function Home() {
     };
 
     const updateSettings = (newSettings: PondSettings) => {
+        // Clone the settings.
+        newSettings = structuredClone(newSettings);
         // Set the settings.
-        setSettings(structuredClone(newSettings));
+        setSettings(newSettings);
 
         // Set the selected avatar.
         let avatarId = selectedAvatarData.id;
@@ -73,7 +75,18 @@ export default function Home() {
             const firstKey = newSettings.avatars[0].id;
             avatarId = firstKey;
         }
-        handleAvatarSelection(avatarId);
+        // Get the avatar data from the id.
+        const avatar = newSettings.avatars.filter((avatar) => avatar.id === avatarId)[0];
+        // Select the avatar.
+        if (avatar) selectAvatar(avatar);
+    };
+
+    const selectAvatar = (avatar: AvatarData) => {
+        if (!avatar) return;
+        setSelectedAvatarData(avatar);
+        setTimeout(() => {
+            setDoc(avatar.script ?? "");
+        }, 0);
     };
 
     const onDocChange = (newDocument: string, avatarId: number) => {
@@ -85,11 +98,8 @@ export default function Home() {
 
     const handleAvatarSelection = (id: number) => {
         const avatar = getAvatarDataFromId(id);
-        if (!avatar) return;
-        setSelectedAvatarData(avatar);
-        setTimeout(() => {
-            setDoc(avatar.script ?? "");
-        }, 0);
+        if (avatar) selectAvatar(avatar);
+        else console.error(`Avatar selection failed. Avatar id: ${id}`);
     };
 
     const handleSaveBattle = useCallback(() => {
