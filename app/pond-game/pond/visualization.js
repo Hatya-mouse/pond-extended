@@ -6,7 +6,7 @@ import * as Battle from './battle';
 let _highlightedAvatar = NaN;
 
 /** Actual avatar size to be shown. */
-var avatarSize = 0.0005;
+var avatarSize = 0.0003;
 /** Size of missiles. */
 var missileRadius = 0.00015;
 /** Length of the beam. */
