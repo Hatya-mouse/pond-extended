@@ -64,8 +64,9 @@ export default function PondGame({
     }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings]);
 
     useEffect(() => {
-        Pond.highlightAvatar(selectedAvatar.id);
-    }, [selectedAvatar])
+        // Don't highlight the avatar during the game.
+        Pond.highlightAvatar(paused ? selectedAvatar.id : NaN);
+    }, [selectedAvatar, paused]);
 
     const updateAvatarInfo = (newAvatarInfo: Avatar[]) => {
         // Update the avatar's health.
