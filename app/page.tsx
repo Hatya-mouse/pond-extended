@@ -2,7 +2,7 @@
 
 // React imports
 import { useCallback, useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 // Utils
 import * as PondDataLoader from "@utils/pondDataLoader";
 import { PondSettings, AvatarData } from "@utils/pondSettings";
@@ -10,7 +10,7 @@ import { PondSettings, AvatarData } from "@utils/pondSettings";
 import PondGame from "@pond-game/pondGame";
 import SettingsView from "@pond/settingsView";
 import PageHeader from "@pond/pageHeader";
-const Editor = dynamic(() => import("@pond/editor"), { ssr: false });
+import Editor from "@pond/editor";
 // CSS
 import "./globals.css";
 

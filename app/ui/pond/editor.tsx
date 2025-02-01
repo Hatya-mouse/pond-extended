@@ -1,5 +1,3 @@
-"use client"
-
 // React
 import { useCallback, useEffect, useRef } from "react";
 // CodeMirror
