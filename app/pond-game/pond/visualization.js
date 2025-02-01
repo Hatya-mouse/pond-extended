@@ -6,9 +6,7 @@ import * as Battle from './battle';
 let _highlightedAvatar = NaN;
 
 /** Actual avatar size to be shown. */
-var avatarSize = 0.0003;
-/** Size of missiles. */
-var missileRadius = 0.00015;
+var avatarSize = 4;
 /** Length of the beam. */
 var beamLength = 2.0;
 /** Viewport canvas. */
@@ -98,6 +96,9 @@ function draw() {
     ctx.fillStyle = _settings.viewport.backgroundColor;
     ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
 
+    // Calculate the scale factor.
+    const scaleFactor = (avatarSize * viewport.width) / _settings.viewport.width;
+
     // Draw dead avatars first.
     const avatars = [];
     for (const avatar of Pond.avatars) {
@@ -111,12 +112,12 @@ function draw() {
     // Draw avatars.
     avatars.forEach((avatar) => {
         // Highlight is the avatar is highlighted.
-        drawAvatar(ctx, avatar, avatar.id === _highlightedAvatar);
+        drawAvatar(ctx, avatar, avatar.id === _highlightedAvatar, scaleFactor);
     });
 
     // Draw the missiles.
     for (const missile of Battle.missiles) {
-        drawMissile(ctx, missile);
+        drawMissile(ctx, missile, scaleFactor);
     }
 
     // Draw events.
@@ -135,13 +136,12 @@ function draw() {
 }
 
 /** Draw avatar's body and waves. */
-function drawAvatar(ctx, avatar, highlighted) {
+function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
     // Highlight amount.
     const highlightFactor = highlighted * 0.3;
 
     ctx.save();
     const { x, y } = canvasCoordinate(avatar.loc.x, avatar.loc.y);
-    const scale = avatarSize * _settings.viewport.width * viewport.width;
     ctx.translate(x, y);
 
     const colour = avatar.colour;
@@ -150,15 +150,15 @@ function drawAvatar(ctx, avatar, highlighted) {
     }
 
     // Draw duck's body.
-    drawCircle(ctx, 0, 0, scale, darkenHexColor(colour, -0.2 + highlightFactor), darkenHexColor(colour, 0.2 + highlightFactor));
-    drawCircle(ctx, 0, 0, scale / 3, darkenHexColor(_settings.avatar.circleColor, highlightFactor));
+    drawCircle(ctx, 0, 0, scaleFactor, darkenHexColor(colour, -0.2 + highlightFactor), darkenHexColor(colour, 0.2 + highlightFactor));
+    drawCircle(ctx, 0, 0, scaleFactor / 3, darkenHexColor(_settings.avatar.circleColor, highlightFactor));
 
     // Calculate values to draw avatar's head.
     // Convert avatar's facing angle into radians.
     const radians = Utils.math.degToRad(avatar.facing);
     // Avatar head's offset.
-    const headRadialOffset = scale * 0.8;
-    const headVerticalOffset = scale * 0.2;
+    const headRadialOffset = scaleFactor * 0.8;
+    const headVerticalOffset = scaleFactor * 0.2;
     // Avatar head's global position.
     const hx = Math.cos(radians) * headRadialOffset;
     const hy = -Math.sin(radians) * headRadialOffset - headVerticalOffset;
@@ -166,16 +166,16 @@ function drawAvatar(ctx, avatar, highlighted) {
     // If avatar is looking up,. draw duck bill first to draw it behind avatar's head.
     if (avatar.facing <= 180) {
         // Draw duck's bill.
-        drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scale);
+        drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scaleFactor);
     }
     // Draw duck's head.
-    drawCircle(ctx, hx, hy, scale / 1.8, darkenHexColor(colour, -0.5 + highlightFactor), darkenHexColor(colour, -0.2 + highlightFactor));
+    drawCircle(ctx, hx, hy, scaleFactor / 1.8, darkenHexColor(colour, -0.5 + highlightFactor), darkenHexColor(colour, -0.2 + highlightFactor));
     if (avatar.facing > 180) {
         // Draw duck's bill.
-        drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scale);
+        drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scaleFactor);
     }
     // Draw duck's eye.
-    drawEye(ctx, hx, hy, radians, scale);
+    drawEye(ctx, hx, hy, radians, scaleFactor);
     ctx.restore();
 }
 
@@ -245,7 +245,7 @@ function drawEye(ctx, headX, headY, radians, scale) {
 }
 
 /** Draws a missile. */
-function drawMissile(ctx, missile) {
+function drawMissile(ctx, missile, scaleFactor) {
     ctx.save();
     const progress = missile.progress / missile.range;
     const dx = (missile.endLoc.x - missile.startLoc.x) * progress;
@@ -259,16 +259,14 @@ function drawMissile(ctx, missile) {
     // Calculate the on-canvas coordinates.
     const missilePos = canvasCoordinate(missile.startLoc.x + dx, missile.startLoc.y + dy + parabola);
     const shadowPos = canvasCoordinate(0, missile.startLoc.y + dy);
-    // Calculate the scale.
-    const scale = missileRadius * _settings.viewport.width * viewport.width
     // Draw missile and its shadow.
     ctx.beginPath();
-    ctx.arc(missilePos.x, shadowPos.y, Math.max(0, 1 - parabola / 10) * scale, 0, Math.PI * 2, true);
+    ctx.arc(missilePos.x, shadowPos.y, Math.max(0, 1 - parabola / 10) * scaleFactor, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.fillStyle = 'rgba(128, 128, 128, ' + Math.max(0, 1 - parabola / 10) + ')';
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(missilePos.x, missilePos.y, scale, 0, Math.PI * 2, true);
+    ctx.arc(missilePos.x, missilePos.y, scaleFactor * 0.4, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.fillStyle = getColour(missile.avatar);
     ctx.fill();
