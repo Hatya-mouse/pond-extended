@@ -66,19 +66,21 @@ export default function Home() {
         // Set the settings.
         setSettings(newSettings);
 
-        // Set the selected avatar.
-        let avatarId = selectedAvatarData.id;
-        // If old selected avatar doesn't exist, select the first one.
-        const isIdExist = newSettings.avatars.filter((avatar) => avatar.id === avatarId).length > 0;
-        if (!isIdExist) {
-            // Get the first item from avatars array.
-            const firstKey = newSettings.avatars[0].id;
-            avatarId = firstKey;
-        }
-        // Get the avatar data from the id.
-        const avatar = newSettings.avatars.filter((avatar) => avatar.id === avatarId)[0];
-        // Select the avatar.
-        if (avatar) selectAvatar(avatar);
+        setTimeout(() => {
+            // Set the selected avatar.
+            let avatarId = selectedAvatarData.id;
+            // If old selected avatar doesn't exist, select the first one.
+            const isIdExist = newSettings.avatars.filter((avatar) => avatar.id === avatarId).length > 0;
+            if (!isIdExist) {
+                // Get the first item from avatars array.
+                const firstKey = newSettings.avatars[0].id;
+                avatarId = firstKey;
+            }
+            // Get the avatar data from the id.
+            const avatar = newSettings.avatars.filter((avatar) => avatar.id === avatarId)[0];
+            // Select the avatar.
+            if (avatar) selectAvatar(avatar);
+        }, 0);
     };
 
     const selectAvatar = (avatar: AvatarData) => {

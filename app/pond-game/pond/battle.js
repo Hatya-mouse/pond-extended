@@ -85,7 +85,7 @@ function update() {
         stop();
     } else {
         // Do it all again in the moment.
-        pid = setTimeout(update, 1000 / _settings.game.fps);
+        pid = setTimeout(update, 1000 / _settings.game.tps);
     }
 }
 

@@ -1,6 +1,7 @@
 export class PondSettings {
     game = {
         fps: 50,
+        tps: 50,
     };
     viewport = {
         width: 100,

@@ -153,7 +153,7 @@ export default function SettingsView({
                 {/* Game settings */}
                 <h1>Game</h1>
                 <h2>FPS</h2>
-                <p>Adjust the fps. Higher fps may affect the performance.</p>
+                <p>Adjust the fps.</p>
                 <label>
                     FPS
                     <input
@@ -174,7 +174,32 @@ export default function SettingsView({
                             })
                         }
                         min="1"
-                        max="240"
+                        max="500"
+                    />
+                </label>
+                <h2>Tick Speed</h2>
+                <p>Adjust the number of script executions per second. Higher tick speed may impact performance.</p>
+                <label>
+                    Tick Speed
+                    <input
+                        className="ml-2 w-48"
+                        type="number"
+                        value={tempSettings.game.tps}
+                        onChange={(e) =>
+                            updateTemp("game", {
+                                ...tempSettings.game,
+                                tps: parseInt(e.target.value ? e.target.value : "0")
+                            })
+                        }
+                        // Clamp the number when focus out.
+                        onBlur={(e) =>
+                            updateTemp("game", {
+                                ...tempSettings.game,
+                                tps: clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
+                            })
+                        }
+                        min="1"
+                        max="500"
                     />
                 </label>
                 {/* Viewport settings */}
@@ -345,11 +370,7 @@ export default function SettingsView({
                                         type="number"
                                         value={avatar.loc.x}
                                         onChange={(e) =>
-                                            updatePosition(
-                                                avatar.id,
-                                                "x",
-                                                parseInt(e.target.value)
-                                            )
+                                            updatePosition(avatar.id, "x", parseInt(e.target.value))
                                         }
                                         // Clamp the number when focus out.
                                         onBlur={(e) =>
@@ -370,11 +391,7 @@ export default function SettingsView({
                                         type="number"
                                         value={avatar.loc.y}
                                         onChange={(e) =>
-                                            updatePosition(
-                                                avatar.id,
-                                                "y",
-                                                parseInt(e.target.value)
-                                            )
+                                            updatePosition(avatar.id, "y", parseInt(e.target.value))
                                         }
                                         // Clamp the number when focus out.
                                         onBlur={(e) =>

@@ -6,7 +6,6 @@ import { PondSettings } from "@utils/pondSettings";
  */
 type PondData = {
     settings: PondSettings,
-    scripts: [number, string][],
 };
 
 /**
