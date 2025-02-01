@@ -7,8 +7,6 @@ import IconButton from "@components/iconButton";
 import ColorPickerButton from "../components/colorPickerButton";
 // PondSettings class
 import { PondSettings, AvatarData } from "@/app/utils/pondSettings";
-// CSS
-import "./pond.css";
 
 const defaultSettings = new PondSettings();
 

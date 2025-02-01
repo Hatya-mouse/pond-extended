@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom"
 import { SketchPicker, ColorResult } from "react-color"
-import "@/app/globals.css";
-import "./components.css";
 
 export default function ColorPickerButton({
     className = "",

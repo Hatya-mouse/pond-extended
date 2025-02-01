@@ -11,8 +11,7 @@ import PondGame from "@pond-game/pondGame";
 import SettingsView from "@pond/settingsView";
 import PageHeader from "@pond/pageHeader";
 import Editor from "@pond/editor";
-// CSS
-import "./globals.css";
+import CreditView from "./ui/pond/creditView";
 
 export default function Home() {
     const [activeView, setActiveView] = useState("editor");
@@ -23,6 +22,8 @@ export default function Home() {
     const [inGameSettings, setInGameSettings] = useState<PondSettings>(new PondSettings());
     // Scripts
     const [selectedAvatarData, setSelectedAvatarData] = useState<AvatarData>(settings.avatars[0]);
+    // Credit visible
+    const [isCreditVisible, setCreditVisible] = useState(false);
 
     // Set up the editor's dark mode.
     useEffect(() => {
@@ -96,6 +97,10 @@ export default function Home() {
         else console.error(`Avatar selection failed. Avatar id: ${id}`);
     };
 
+    const handleUpdateInGameSettings = useCallback(() => {
+        setInGameSettings(settings);
+    }, [settings]);
+
     const handleSaveBattle = useCallback(() => {
         const exportData = {
             settings: settings,
@@ -135,13 +140,13 @@ export default function Home() {
         input.click();
     };
 
-    const handleUpdateInGameSettings = () => {
-        setInGameSettings(settings);
+    const handleShowCredits = () => {
+        setCreditVisible((prevValue: boolean) => !prevValue);
     };
 
     return (
         <div className={isDarkmode ? "dark" : ""}>
-            <PageHeader darkMode={isDarkmode} onSave={handleSaveBattle} onLoad={handleLoadBattle} />
+            <PageHeader darkMode={isDarkmode} onSave={handleSaveBattle} onLoad={handleLoadBattle} onInfo={handleShowCredits} />
             <div className={`flex gap-2 p-2`}>
                 <PondGame
                     settings={settings}
@@ -168,6 +173,11 @@ export default function Home() {
                 />
             </div>
             <div id="overlays"></div>
+            {isCreditVisible && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                    <CreditView onHide={() => setCreditVisible(false)} darkMode={isDarkmode} />
+                </div>
+            )}
         </div>
     );
 }

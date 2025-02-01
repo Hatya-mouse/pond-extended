@@ -240,3 +240,12 @@ pre,
         border: 1px solid #444;
     }
 }
+
+/* Credit view */
+.credit-view {
+    background: var(--background-light);
+}
+
+.credit-view.dark {
+    background: var(--background-dark);
+}

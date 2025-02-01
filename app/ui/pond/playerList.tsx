@@ -3,8 +3,6 @@ import clsx from "clsx"
 // Pond Game Imports
 import Avatar from "@pond-game/pond/avatar";
 import { PondSettings } from "@/app/utils/pondSettings";
-// CSS
-import "@pond/pond.css";
 
 export default function PlayerList({
     avatars,

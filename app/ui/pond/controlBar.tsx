@@ -1,7 +1,5 @@
 import clsx from "clsx";
 import IconButton from "../components/iconButton";
-import "@/app/globals.css";
-import "@pond/pond.css";
 
 export default function ControlBar({
     onStart,

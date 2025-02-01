@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
-import "./components.css";
 
 export default function IconButton({
     className = "",

@@ -8,8 +8,6 @@ import { AvatarData, PondSettings } from "@utils/pondSettings";
 // UI Elements
 import ControlBar from "@pond/controlBar";
 import PlayerList from "@pond/playerList";
-// CSS
-import "@/app/globals.css";
 
 export default function PondGame({
     settings,

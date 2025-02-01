@@ -6,9 +6,9 @@ import * as Battle from './battle';
 let _highlightedAvatar = NaN;
 
 /** Actual avatar size to be shown. */
-var avatarSize = 4;
+var avatarSize = 4.0;
 /** Length of the beam. */
-var beamLength = 2.0;
+var beamLength = 50.0;
 /** Viewport canvas. */
 var viewport;
 /** Canvas for scratch. */
@@ -281,7 +281,7 @@ function drawBeam(ctx, event, avatar) {
     ctx.beginPath();
     // Get the coordinates.
     const { x, y } = canvasCoordinate(avatar.loc.x, avatar.loc.y);
-    const r = _settings.viewport.width * viewport.width * beamLength;
+    const r = (beamLength * viewport.width) / _settings.viewport.width;
     ctx.lineTo(x + Math.cos(angle1) * r, y + Math.sin(angle1) * r);
     ctx.arc(x, y, r, angle1, angle2);
     ctx.lineTo(x, y);

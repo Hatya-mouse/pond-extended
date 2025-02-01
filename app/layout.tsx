@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+// CSS
+import "@/webfonts/fa.all.min.css";
+import "@/app/globals.css";
+import "@components/components.css";
+import "@pond/pond.css";
 
 export const metadata: Metadata = {
     title: "Pond Extended",

@@ -41,7 +41,6 @@ export default class Avatar {
         this.interpreter = 0;
         // Push the avatar to the battle.
         this.visualizationIndex = Pond.avatars.length;
-        Utils.log(this + ' loaded.');
     }
 
     toString() {

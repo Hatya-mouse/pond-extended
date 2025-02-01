@@ -17,10 +17,6 @@ import { FormatRequest, FormatResponse } from "@/app/utils/editorDoWork";
 import { PondSettings, AvatarData } from "@utils/pondSettings";
 // Components
 import IconButton from "@components/iconButton";
-// CSS
-import "@/webfonts/fa.all.min.css";
-import "@/app/globals.css";
-import "./pond.css";
 
 /** A list of completions. */
 let completions: Completion[] = [];

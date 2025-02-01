@@ -29,6 +29,21 @@ button {
     cursor: default;
 }
 
+a {
+    color: #386fae;
+}
+
+a:hover {
+    text-decoration: underline;
+    transition: text-decoration 0.3s ease-in-out;
+}
+
+.dark {
+    a {
+        color: #81c2ff;
+    }
+}
+
 /* UI objects. */
 .float-container {
     border: var(--border);
