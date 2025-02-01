@@ -40,32 +40,6 @@ export default function PondGame({
     // Avatar's current information including health.
     const [avatarInfo, setAvatarInfo] = useState<Avatar[]>([]);
 
-    useEffect(() => {
-        const viewport = document.getElementById("viewport") as HTMLCanvasElement;
-        setCanvasCtx(viewport.getContext("2d"));
-        setCanvas(viewport);
-
-        const scratch = document.getElementById("scratch") as HTMLCanvasElement;
-        setScratchCanvasCtx(viewport.getContext("2d"));
-        setScratchCanvas(scratch);
-    }, []);
-
-    useEffect(() => {
-        if (
-            canvas &&
-            scratchCanvas &&
-            canvasCtx &&
-            scratchCanvasCtx
-        ) {
-            Pond.init(canvas, scratchCanvas, inGameSettings, onGameEnd, updateAvatarInfo);
-        }
-    }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings]);
-
-    useEffect(() => {
-        // Don't highlight the avatar during the game.
-        Pond.highlightAvatar(paused ? selectedAvatar.id : NaN);
-    }, [selectedAvatar, paused]);
-
     const updateAvatarInfo = (newAvatarInfo: Avatar[]) => {
         // Update the avatar's health.
         setAvatarInfo([...newAvatarInfo]); // Create a new array reference
@@ -82,6 +56,8 @@ export default function PondGame({
         // Set the flags.
         setStarted(true);
         setPaused(false);
+        // Remove avatar highlight.
+        Pond.highlightAvatar(NaN);
     };
 
     const pause = () => {
@@ -89,6 +65,8 @@ export default function PondGame({
         Pond.pause();
         // Set the paused flag.
         setPaused(true);
+        // Highlight the selected avatar.
+        Pond.highlightAvatar(selectedAvatar.id);
     };
 
     const reset = () => {
@@ -98,15 +76,21 @@ export default function PondGame({
         // Set the flags.
         setStarted(false);
         setPaused(true);
+        // Highlight the selected avatar.
+        Pond.highlightAvatar(selectedAvatar.id);
     };
 
-    const onGameEnd = () => {
+    const onGameEnd = useCallback(() => {
         setStarted(false);
         setPaused(true);
-    };
+        // Highlight the selected avatar.
+        Pond.highlightAvatar(selectedAvatar.id);
+    }, [selectedAvatar]);
 
     const handleAvatarSelection = (id: number) => {
         onAvatarSelect(id);
+        // Don't highlight the avatar during the game.
+        Pond.highlightAvatar(paused ? id : NaN);
     };
 
     const resizeCanvas = useCallback(() => {
@@ -138,6 +122,27 @@ export default function PondGame({
     useEffect(() => {
         if (!started) updateSettings();
     }, [settings, started, updateSettings]);
+
+    useEffect(() => {
+        const viewport = document.getElementById("viewport") as HTMLCanvasElement;
+        setCanvasCtx(viewport.getContext("2d"));
+        setCanvas(viewport);
+
+        const scratch = document.getElementById("scratch") as HTMLCanvasElement;
+        setScratchCanvasCtx(viewport.getContext("2d"));
+        setScratchCanvas(scratch);
+    }, []);
+
+    useEffect(() => {
+        if (
+            canvas &&
+            scratchCanvas &&
+            canvasCtx &&
+            scratchCanvasCtx
+        ) {
+            Pond.init(canvas, scratchCanvas, inGameSettings, onGameEnd, updateAvatarInfo);
+        }
+    }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings, onGameEnd]);
 
     return (
         <div className="flex flex-col gap-2 left-area select-none">
