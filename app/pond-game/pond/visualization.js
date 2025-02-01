@@ -6,9 +6,9 @@ import * as Battle from './battle';
 let _highlightedAvatar = NaN;
 
 /** Actual avatar size to be shown. */
-var avatarSize = 0.1;
+var avatarSize = 0.0005;
 /** Size of missiles. */
-var missileRadius = 0.03;
+var missileRadius = 0.00015;
 /** Length of the beam. */
 var beamLength = 2.0;
 /** Viewport canvas. */
@@ -141,7 +141,7 @@ function drawAvatar(ctx, avatar, highlighted) {
 
     ctx.save();
     const { x, y } = canvasCoordinate(avatar.loc.x, avatar.loc.y);
-    const scale = avatarSize * _settings.viewport.width;
+    const scale = avatarSize * _settings.viewport.width * viewport.width;
     ctx.translate(x, y);
 
     const colour = avatar.colour;
@@ -259,14 +259,16 @@ function drawMissile(ctx, missile) {
     // Calculate the on-canvas coordinates.
     const missilePos = canvasCoordinate(missile.startLoc.x + dx, missile.startLoc.y + dy + parabola);
     const shadowPos = canvasCoordinate(0, missile.startLoc.y + dy);
+    // Calculate the scale.
+    const scale = missileRadius * _settings.viewport.width * viewport.width
     // Draw missile and its shadow.
     ctx.beginPath();
-    ctx.arc(missilePos.x, shadowPos.y, Math.max(0, 1 - parabola / 10) * missileRadius * _settings.viewport.width, 0, Math.PI * 2, true);
+    ctx.arc(missilePos.x, shadowPos.y, Math.max(0, 1 - parabola / 10) * scale, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.fillStyle = 'rgba(128, 128, 128, ' + Math.max(0, 1 - parabola / 10) + ')';
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(missilePos.x, missilePos.y, missileRadius * _settings.viewport.width, 0, Math.PI * 2, true);
+    ctx.arc(missilePos.x, missilePos.y, scale, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.fillStyle = getColour(missile.avatar);
     ctx.fill();
@@ -281,7 +283,7 @@ function drawBeam(ctx, event, avatar) {
     ctx.beginPath();
     // Get the coordinates.
     const { x, y } = canvasCoordinate(avatar.loc.x, avatar.loc.y);
-    const r = _settings.viewport.width * beamLength;
+    const r = _settings.viewport.width * viewport.width * beamLength;
     ctx.lineTo(x + Math.cos(angle1) * r, y + Math.sin(angle1) * r);
     ctx.arc(x, y, r, angle1, angle2);
     ctx.lineTo(x, y);

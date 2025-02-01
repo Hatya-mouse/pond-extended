@@ -1,6 +1,7 @@
 # Pond Extended
 
 **Pond Extended** is an improved version of **Blockly Games' Pond** with additional features and enhancements.
+Play now at [Pond Extended (Vercel)](https://pond-extended.vercel.app/)
 
 ## Features
 
