@@ -9,6 +9,8 @@ import { CompletionContext, Completion, snippetCompletion as snip } from "@codem
 import { linter, lintGutter } from "@codemirror/lint";
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import * as esLintBrowserify from "eslint-linter-browserify";
+// CLSX
+import clsx from "clsx";
 // Formatter WebWorker
 import { FormatRequest, FormatResponse } from "@/app/utils/editorDoWork";
 // Pond Game
@@ -44,7 +46,6 @@ const cmExtensions = [
 export default function Editor({
     className = "",
     settings,
-    value,
     setDoc = () => { },
     onToggleView = () => { },
     darkMode = false,
@@ -52,8 +53,7 @@ export default function Editor({
 }: {
     className?: string,
     settings: PondSettings,
-    value: string,
-    setDoc?: (doc: string, id: number) => void,
+    setDoc?: (doc: string, avatar: AvatarData) => void,
     onToggleView?: (_: string) => void,
     darkMode?: boolean,
     selectedAvatarData: AvatarData,
@@ -71,7 +71,7 @@ export default function Editor({
 
     // Called when the document of codemirror changed.
     const onChange = useCallback((val: string) => {
-        setTimeout(() => setDoc(val, selectedAvatarData.id), 0);
+        setTimeout(() => setDoc(val, selectedAvatarData), 0);
     }, [setDoc, selectedAvatarData]);
 
     /** Called when the toggle view button is pressed. */
@@ -84,7 +84,7 @@ export default function Editor({
         // Post message to the work.
         if (worker.current) worker.current.postMessage({
             order: "format",
-            doc: value,
+            doc: selectedAvatarData.script,
             tabWidth: settings.editor.tabWidth,
             avatar: selectedAvatarData,
         } as FormatRequest);
@@ -93,7 +93,7 @@ export default function Editor({
     /** Called when the formatter WebWorker completes the formatting task. */
     const handleWorkerMessage = useCallback((e: MessageEvent<FormatResponse>) => {
         const { doc, avatar } = e.data;
-        setTimeout(() => setDoc(doc, avatar.id), 0);
+        setTimeout(() => setDoc(doc, avatar), 0);
     }, [setDoc]);
 
     // Called when the page is loaded.
@@ -137,15 +137,21 @@ export default function Editor({
             </div>
             <div className="editor-parent">
                 {/* CodeMirror editor comes here. */}
-                <ReactCodeMirror
-                    className="transition-all duration-300 ease-in-out"
-                    value={value}
-                    onChange={onChange}
-                    // Pass the extensions to the CodeMirror editor.
-                    extensions={cmExtensions}
-                    // Set the theme.
-                    theme={darkMode ? vscodeDark : vscodeLight}
-                />
+                {settings.avatars.map((avatar: AvatarData) =>
+                    <ReactCodeMirror
+                        key={avatar.id}
+                        className={clsx(
+                            "transition-all duration-300 ease-in-out",
+                            avatar === selectedAvatarData ? "visible" : "hidden",
+                        )}
+                        value={avatar.script}
+                        onChange={onChange}
+                        // Pass the extensions to the CodeMirror editor.
+                        extensions={cmExtensions}
+                        // Set the theme.
+                        theme={darkMode ? vscodeDark : vscodeLight}
+                    />
+                )}
             </div>
         </div>
     );

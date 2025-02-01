@@ -22,7 +22,6 @@ export default function Home() {
     // The settings which is currently used in the game.
     const [inGameSettings, setInGameSettings] = useState<PondSettings>(new PondSettings());
     // Scripts
-    const [doc, setDoc] = useState("");
     const [selectedAvatarData, setSelectedAvatarData] = useState<AvatarData>(settings.avatars[0]);
 
     // Set up the editor's dark mode.
@@ -84,16 +83,11 @@ export default function Home() {
     const selectAvatar = (avatar: AvatarData) => {
         if (!avatar) return;
         setSelectedAvatarData(avatar);
-        setTimeout(() => {
-            setDoc(avatar.script ?? "");
-        }, 0);
     };
 
-    const onDocChange = (newDocument: string, avatarId: number) => {
-        const avatar = getAvatarDataFromId(avatarId);
+    const onDocChange = (newDocument: string, avatar: AvatarData) => {
         if (!avatar) return;
         avatar.script = newDocument;
-        setDoc(newDocument);
     };
 
     const handleAvatarSelection = (id: number) => {
@@ -152,6 +146,7 @@ export default function Home() {
                 <PondGame
                     settings={settings}
                     inGameSettings={inGameSettings}
+                    selectedAvatar={selectedAvatarData}
                     onAvatarSelect={handleAvatarSelection}
                     onUpdateInGameSettings={handleUpdateInGameSettings}
                 />
@@ -159,7 +154,6 @@ export default function Home() {
                 <Editor
                     className={`grow ${activeView === "settings" && "hidden"}`}
                     settings={settings}
-                    value={doc}
                     setDoc={onDocChange}
                     onToggleView={setActiveView}
                     darkMode={isDarkmode}

@@ -9,7 +9,6 @@ import "@pond/pond.css";
 export default function PlayerList({
     avatars,
     latestSettings,
-    onHighlightAvatar = () => { },
     onSelectAvatar = () => { },
 }: {
     avatars: Avatar[],
@@ -18,11 +17,6 @@ export default function PlayerList({
      * current the in-game avatars and the latest settings avatars.
      */
     latestSettings: PondSettings,
-    /**
-     * Called when the avatar is highlighted.
-     * @param {number} _ ID of the highlighted avatar, not index.
-     */
-    onHighlightAvatar?: (_: number) => void,
     /**
      * Called when the avatar is selected.
      * @param {number} _ ID of the selected avatar, not index.
@@ -39,8 +33,6 @@ export default function PlayerList({
                         index % 2 > 0 && "bg-opacity-5 bg-gray-500",
                     )}
                     key={avatar.id}
-                    onMouseEnter={() => onHighlightAvatar(avatar.id)}
-                    onMouseLeave={() => onHighlightAvatar(NaN)}
                     onMouseDown={() => onSelectAvatar(avatar.id)}
                 >
                     {/* Health bar */}

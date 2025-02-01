@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import * as Pond from "@pond-game/pond/pond";
 import Avatar from "@pond-game/pond/avatar";
 // Settings type
-import { PondSettings } from "@utils/pondSettings";
+import { AvatarData, PondSettings } from "@utils/pondSettings";
 // UI Elements
 import ControlBar from "@pond/controlBar";
 import PlayerList from "@pond/playerList";
@@ -14,11 +14,13 @@ import "@/app/globals.css";
 export default function PondGame({
     settings,
     inGameSettings,
+    selectedAvatar,
     onAvatarSelect,
     onUpdateInGameSettings,
 }: {
     settings: PondSettings,
     inGameSettings: PondSettings,
+    selectedAvatar: AvatarData,
     /**
      * Called when the avatar is selected.
      * @param {number} _ ID of the selected avatar, not index.
@@ -61,6 +63,10 @@ export default function PondGame({
         }
     }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings]);
 
+    useEffect(() => {
+        Pond.highlightAvatar(selectedAvatar.id);
+    }, [selectedAvatar])
+
     const updateAvatarInfo = (newAvatarInfo: Avatar[]) => {
         // Update the avatar's health.
         setAvatarInfo([...newAvatarInfo]); // Create a new array reference
@@ -98,10 +104,6 @@ export default function PondGame({
     const onGameEnd = () => {
         setStarted(false);
         setPaused(true);
-    };
-
-    const handleAvatarHighlight = (id: number) => {
-        Pond.highlightAvatar(id);
     };
 
     const handleAvatarSelection = (id: number) => {
@@ -164,7 +166,7 @@ export default function PondGame({
                 onReset={reset}
                 isPaused={paused}
             />
-            <PlayerList avatars={avatarInfo} latestSettings={settings} onHighlightAvatar={handleAvatarHighlight} onSelectAvatar={handleAvatarSelection} />
+            <PlayerList avatars={avatarInfo} latestSettings={settings} onSelectAvatar={handleAvatarSelection} />
         </div>
     );
 }
