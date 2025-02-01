@@ -59,7 +59,7 @@ export default function PondGame({
         ) {
             Pond.init(canvas, scratchCanvas, inGameSettings, onGameEnd, updateAvatarInfo);
         }
-    }, [canvasCtx, scratchCanvasCtx]);
+    }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings]);
 
     const updateAvatarInfo = (newAvatarInfo: Avatar[]) => {
         // Update the avatar's health.
