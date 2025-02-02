@@ -10,7 +10,7 @@ export default function ConfirmationModal({
     darkMode = false
 }: {
     title?: string,
-    message?: string,
+    message?: React.ReactNode,
     cancelText?: string,
     confirmText?: string,
     onConfirm?: () => void,
@@ -24,10 +24,10 @@ export default function ConfirmationModal({
                 darkMode && "dark",
             )}>
                 <div className="default-header gap-2">
-                    <p className="font-bold">{title}</p>
+                    <div className="font-bold">{title}</div>
                 </div>
                 <div className="flex-row gap-2 p-2">
-                    <p className="mb-2">{message}</p>
+                    <div className="mb-2">{message}</div>
                     <div className="flex gap-2">
                         <button className="text-button" onClick={onCancel}>{cancelText}</button>
                         <button className="text-button" onClick={onConfirm}>{confirmText}</button>

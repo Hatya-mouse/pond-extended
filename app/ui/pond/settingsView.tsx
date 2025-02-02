@@ -482,7 +482,12 @@ export default function SettingsView({
             </div>
             {showResetModal && <ConfirmationModal
                 title="Reset to Default"
-                message="Are you sure you want to reset all settings to default? This will also reset every duck's script."
+                message={
+                    <>
+                        <div>Are you sure you want to reset all settings to default?</div>
+                        <strong>This will also reset every duck&apos;s script.</strong>
+                    </>
+                }
                 onConfirm={() => {
                     resetToDefault();
                     setShowResetModal(false);
