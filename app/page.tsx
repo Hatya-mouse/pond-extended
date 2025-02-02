@@ -170,11 +170,7 @@ export default function Home() {
                 />
             </div>
             <div id="overlays"></div>
-            {isCreditVisible && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                    <CreditView onHide={() => setCreditVisible(false)} darkMode={isDarkmode} />
-                </div>
-            )}
-        </div>
+            {isCreditVisible && <CreditView onHide={() => setCreditVisible(false)} darkMode={isDarkmode} />}
+        </div >
     );
 }

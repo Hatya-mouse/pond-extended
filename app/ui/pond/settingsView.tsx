@@ -8,6 +8,7 @@ import ColorPickerButton from "../components/colorPickerButton";
 // PondSettings class
 import { PondSettings, AvatarData } from "@app/types/pond.types";
 import "@app/globals.css";
+import ConfirmationModal from "../components/confirmationModal";
 
 export default function SettingsView({
     className = "",
@@ -23,6 +24,8 @@ export default function SettingsView({
     onChangeSettings?: (_: PondSettings) => void,
 }) {
     const [tempSettings, setTempSettings] = useState(() => new PondSettings());
+    // Reset modal
+    const [showResetModal, setShowResetModal] = useState(false);
 
     /** Change the specified property of tempSettings with debounce */
     const updateTemp = useCallback((key: string, value: unknown) => {
@@ -468,7 +471,7 @@ export default function SettingsView({
                 {/* Apply button */}
                 <h2 className="mt-4">Save Settings</h2>
                 <div className="flex gap-2">
-                    <button className="text-button" onClick={resetToDefault}>Reset to Default</button>
+                    <button className="text-button" onClick={() => setShowResetModal(true)}>Reset to Default</button>
                     <button className="text-button" onClick={cancelChanges} disabled={!hasToSave}>Cancel Changes</button>
                     <button
                         className="text-button highlighted"
@@ -477,6 +480,16 @@ export default function SettingsView({
                     >Save Changes</button>
                 </div>
             </div>
+            {showResetModal && <ConfirmationModal
+                title="Reset to Default"
+                message="Are you sure you want to reset all settings to default? This will also reset every duck's script."
+                onConfirm={() => {
+                    resetToDefault();
+                    setShowResetModal(false);
+                }}
+                onCancel={() => setShowResetModal(false)}
+                darkMode={darkMode}
+            />}
         </div>
     )
 }
