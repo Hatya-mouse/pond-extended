@@ -49,7 +49,7 @@ export default function SettingsView({
             ...prev,
             avatars: [...prev.avatars, new AvatarData(
                 Date.now(),
-                `Avatar ${prev.avatars.length + 1}`,
+                `Duck ${prev.avatars.length + 1}`,
                 { x: 0, y: 0 },
                 "#ff9c00",
                 ""
@@ -380,8 +380,8 @@ export default function SettingsView({
                     />
                 </div>
 
-                {/* Avatar settings */}
-                <h1>Avatar</h1>
+                {/* Duck settings */}
+                <h1>Duck</h1>
                 {/* Duck bill color for gradient */}
                 <h2>Bill Color</h2>
                 <div className="flex gap-2 flex-wrap leading-7">
@@ -429,7 +429,7 @@ export default function SettingsView({
                     />
                 </div>
                 {/* Avatar list */}
-                <h2>Edit Avatars</h2>
+                <h2>Edit Ducks</h2>
                 <p>Add, edit or remove ducks.</p>
                 {/* Editable avatar list */}
                 <div className="avatar-list-container">
