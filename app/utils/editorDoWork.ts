@@ -2,18 +2,15 @@
 import * as prettier from "prettier/standalone";
 import estree from "prettier/plugins/estree";
 import meriyah from "prettier/plugins/meriyah";
-import { AvatarData } from "@app/types/pond.types";
 
 export interface FormatRequest {
     order: "format";
     doc: string;
     tabWidth: number;
-    avatar: AvatarData;
 }
 
 export interface FormatResponse {
     doc: string;
-    avatar: AvatarData;
 }
 
 addEventListener("message", async (e: MessageEvent<FormatRequest>) => {
@@ -25,11 +22,10 @@ addEventListener("message", async (e: MessageEvent<FormatRequest>) => {
         parser: "meriyah",
         plugins: [meriyah, estree],
         tabWidth: request.tabWidth,
-        trailingComma: "es5",
+        trailingComma: "es5"
     });
     // Return the value via message.
     postMessage({
-        doc: formatted,
-        avatar: request.avatar,
+        doc: formatted
     });
 });

@@ -199,13 +199,13 @@ function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
     ctx.rotate(-radians + Math.PI / 2);
 
     // Crate an gradient.
-    const waveLength = scaleFactor * avatar.speed / 40;
+    const waveLength = scaleFactor * avatar.speed / 30;
     const waveWidth = scaleFactor * 1.8;
     let gradient = ctx.createLinearGradient(waveWidth / 2, 0, waveWidth / 2, waveLength);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
     gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = gradient;
-    ctx.fillRect(-waveWidth / 2, scaleFactor * 0.8, waveWidth, waveLength);
+    ctx.fillRect(-waveWidth / 2, scaleFactor * 0.6, waveWidth, waveLength);
 
     // Reset transformation matrix
     ctx.restore();

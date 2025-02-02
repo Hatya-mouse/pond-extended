@@ -1,5 +1,5 @@
 // React
-import { useCallback, useEffect, useRef, useMemo } from "react";
+import { useCallback, useEffect, useRef, useMemo, useState } from "react";
 // CodeMirror
 import ReactCodeMirror from "@uiw/react-codemirror"
 import { basicSetup } from "codemirror";
@@ -57,62 +57,53 @@ export default function Editor({
     darkMode?: boolean,
     selectedAvatarData: AvatarData,
 }) {
-    // Memoize worker ref to prevent unnecessary re-renders
     const worker = useRef<Worker | undefined>(undefined);
+    const [editorDoc, setEditorDoc] = useState(selectedAvatarData.script);
 
-    // Debounce the onChange handler to reduce frequent updates
+    useEffect(() => {
+        setEditorDoc(selectedAvatarData.script);
+    }, [selectedAvatarData]);
+
     const onChange = useCallback((val: string) => {
-        const timeoutId = setTimeout(() => {
-            setDoc(val, selectedAvatarData);
-        }, 300); // Add 300ms debounce
-        return () => clearTimeout(timeoutId);
+        setDoc(val, selectedAvatarData);
+        setEditorDoc(val); // Update editorDoc with the new value
     }, [setDoc, selectedAvatarData]);
-
-    /** Called when the toggle view button is pressed. */
-    const handleToggleView = useCallback(() => {
-        onToggleView("settings");
-    }, [onToggleView]);
 
     /** Format the script. */
     const formatScript = () => {
-        // Post message to the work.
-        if (worker.current) worker.current.postMessage({
-            order: "format",
-            doc: selectedAvatarData.script,
-            tabWidth: settings.editor.tabWidth,
-            avatar: selectedAvatarData,
-        } as FormatRequest);
+        // Post message to the worker.
+        if (worker.current) {
+            const request: FormatRequest = {
+                order: "format",
+                doc: selectedAvatarData.script,
+                tabWidth: settings.editor.tabWidth
+            };
+            worker.current.postMessage(request);
+        }
     };
 
     /** Called when the formatter WebWorker completes the formatting task. */
     const handleWorkerMessage = useCallback((e: MessageEvent<FormatResponse>) => {
-        const { doc, avatar } = e.data;
-        setTimeout(() => setDoc(doc, avatar), 0);
-    }, [setDoc]);
+        const { doc } = e.data;
+        setDoc(doc, selectedAvatarData);
+        setEditorDoc(doc); // Update editorDoc with the formatted document
+    }, [setDoc, selectedAvatarData]);
 
-    // Called when the page is loaded.
     // Set up the WebWorker.
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            // Create the WebWorker.
-            if (window.Worker && worker.current === undefined) {
-                worker.current = new Worker(new URL("@utils/editorDoWork", import.meta.url));
-                worker.current.onmessage = handleWorkerMessage;
-            }
-            return () => {
-                // If useEffect is called twice, reset the worker...
-                if (window.Worker && worker.current) {
-                    worker.current.onmessage = handleWorkerMessage;
-                    worker.current.terminate();
-                    worker.current = undefined;
-                }
-                // And remove the completions.
-                completions = [];
-            };
+        if (typeof window !== "undefined" && window.Worker && typeof worker.current === "undefined") {
+            worker.current = new Worker(new URL("@utils/editorDoWork", import.meta.url));
+            worker.current.onmessage = handleWorkerMessage;
         }
+        return () => {
+            if (worker.current) {
+                worker.current.terminate();
+                worker.current = undefined;
+            }
+            completions = [];
+        };
     }, [handleWorkerMessage]);
 
-    // Memoize the extensions array to prevent recreation on each render
     const memoizedExtensions = useMemo(() => cmExtensions, []);
 
     return (
@@ -130,8 +121,7 @@ export default function Editor({
                 </div>
                 <div className="flex gap-2">
                     <IconButton className="fa-solid fa-broom" tooltip="Format Script" onClick={formatScript} />
-                    {/* Toggle view button */}
-                    <IconButton className="fa-solid fa-gear" tooltip="Open Settings" onClick={handleToggleView} />
+                    <IconButton className="fa-solid fa-gear" tooltip="Open Settings" onClick={() => onToggleView("settings")} />
                 </div>
             </div>
             <div className="editor-parent">
@@ -142,7 +132,7 @@ export default function Editor({
                         <ReactCodeMirror
                             key={avatar.id}
                             className="visible will-change-contents"
-                            value={avatar.script}
+                            value={editorDoc}
                             onChange={onChange}
                             extensions={memoizedExtensions}
                             theme={darkMode ? vscodeDark : vscodeLight}
