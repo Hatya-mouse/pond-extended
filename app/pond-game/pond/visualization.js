@@ -191,27 +191,29 @@ function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
         ctx.globalAlpha = 0.25;
     }
 
+    // Convert avatar's facing angle into radians.
+    const radians = Utils.math.degToRad(avatar.facing);
+
     // Draw duck's wave.
-    // ctx.save();
-    // ctx.rotate(Utils.math.degToRad(360 - avatar.degree));
+    ctx.save();
+    ctx.rotate(-radians + Math.PI / 2);
 
     // Crate an gradient.
-    let gradient = ctx.createLinearGradient(0, 0, scaleFactor, scaleFactor);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+    const waveLength = scaleFactor * avatar.speed / 40;
+    let gradient = ctx.createLinearGradient(scaleFactor * 0.9, 0, scaleFactor * 0.9, waveLength);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
     gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = gradient;
-    ctx.fillRect(-scaleFactor / 2, 0, scaleFactor, scaleFactor);
+    ctx.fillRect(-scaleFactor * 0.9, 0, scaleFactor * 1.8, waveLength);
 
-    // // Reset transformation matrix
-    // ctx.restore();
+    // Reset transformation matrix
+    ctx.restore();
 
     // Draw duck's body.
     drawCircle(ctx, 0, 0, scaleFactor, darkenHexColor(colour, -0.2 + highlightFactor), darkenHexColor(colour, 0.2 + highlightFactor));
     drawCircle(ctx, 0, 0, scaleFactor / 3, darkenHexColor(_settings.avatar.circleColor, highlightFactor));
 
     // Calculate values to draw avatar's head.
-    // Convert avatar's facing angle into radians.
-    const radians = Utils.math.degToRad(avatar.facing);
     // Avatar head's offset.
     const headRadialOffset = scaleFactor * 0.8;
     const headVerticalOffset = scaleFactor * 0.2;
