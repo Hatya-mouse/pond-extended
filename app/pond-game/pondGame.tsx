@@ -87,11 +87,11 @@ export default function PondGame({
         Pond.highlightAvatar(selectedAvatar.id);
     }, [selectedAvatar]);
 
-    const handleAvatarSelection = (id: number) => {
+    const handleAvatarSelection = useCallback((id: number) => {
         onAvatarSelect(id);
         // Don't highlight the avatar during the game.
         Pond.highlightAvatar(paused ? id : NaN);
-    };
+    }, [paused, onAvatarSelect]);
 
     const resizeCanvas = useCallback(() => {
         if (!canvas) return;
@@ -117,13 +117,14 @@ export default function PondGame({
     }, [canvas, resizeCanvas]);
 
     const updateSettings = useCallback(() => {
+        if (started) return;
         onUpdateInGameSettings();
         Pond.reset(settings);
-    }, [settings, onUpdateInGameSettings]);
+    }, [settings, started, onUpdateInGameSettings]);
 
     useEffect(() => {
-        if (!started) updateSettings();
-    }, [settings, started, updateSettings]);
+        updateSettings();
+    }, [settings, updateSettings]);
 
     useEffect(() => {
         const viewport = document.getElementById("viewport") as HTMLCanvasElement;

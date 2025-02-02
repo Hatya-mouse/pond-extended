@@ -9,8 +9,6 @@ import ColorPickerButton from "../components/colorPickerButton";
 import { PondSettings, AvatarData } from "@app/types/pond.types";
 import "@app/globals.css";
 
-const defaultSettings = new PondSettings();
-
 export default function SettingsView({
     className = "",
     onToggleView,
@@ -24,7 +22,7 @@ export default function SettingsView({
     settings: PondSettings,
     onChangeSettings?: (_: PondSettings) => void,
 }) {
-    const [tempSettings, setTempSettings] = useState(() => defaultSettings);
+    const [tempSettings, setTempSettings] = useState(() => new PondSettings());
 
     /** Change the specified property of tempSettings with debounce */
     const updateTemp = useCallback((key: string, value: unknown) => {
@@ -95,7 +93,7 @@ export default function SettingsView({
 
     /** Reset to the default settings - memoized */
     const resetToDefault = useCallback(() => {
-        setTempSettings(defaultSettings);
+        setTempSettings(new PondSettings());
     }, []);
 
     /** Cancel changes - memoized */

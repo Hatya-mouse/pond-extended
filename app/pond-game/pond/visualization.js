@@ -191,6 +191,20 @@ function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
         ctx.globalAlpha = 0.25;
     }
 
+    // Draw duck's wave.
+    // ctx.save();
+    // ctx.rotate(Utils.math.degToRad(360 - avatar.degree));
+
+    // Crate an gradient.
+    let gradient = ctx.createLinearGradient(0, 0, scaleFactor, scaleFactor);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(-scaleFactor / 2, 0, scaleFactor, scaleFactor);
+
+    // // Reset transformation matrix
+    // ctx.restore();
+
     // Draw duck's body.
     drawCircle(ctx, 0, 0, scaleFactor, darkenHexColor(colour, -0.2 + highlightFactor), darkenHexColor(colour, 0.2 + highlightFactor));
     drawCircle(ctx, 0, 0, scaleFactor / 3, darkenHexColor(_settings.avatar.circleColor, highlightFactor));
@@ -216,6 +230,7 @@ function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
         // Draw duck's bill.
         drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scaleFactor);
     }
+
     // Draw duck's eye.
     drawEye(ctx, hx, hy, radians, scaleFactor);
     ctx.restore();

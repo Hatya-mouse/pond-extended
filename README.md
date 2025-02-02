@@ -1,7 +1,9 @@
 # Pond Extended
 
+![GitHub Created At](https://img.shields.io/github/created-at/hatya-mouse/pond-extended)
+![GitHub License](https://img.shields.io/github/license/hatya-mouse/pond-extended)
 ![GitHub last commit](https://img.shields.io/github/last-commit/hatya-mouse/pond-extended)
-![GitHub deployments](https://img.shields.io/github/deployments/hatya-mouse/pond-extended/verecl)
+![GitHub deployments](https://img.shields.io/github/deployments/hatya-mouse/pond-extended/production)
 
 **Pond Extended** is an improved version of **Blockly Games' Pond** with additional features and enhancements.  
 Play now at [https://pond-extended.vercel.app](https://pond-extended.vercel.app/)
