@@ -9,8 +9,10 @@ export var events = [];
 export var missiles = [];
 /** Time for cannon to be reloaded. */
 export var reload_time = 1;
+/** List of already dead avatars. */
+export var deadAvatars = [];
 /** Ordered list of avatar with the best avatar first. */
-export var rank = [];
+var rank = [];
 /** Speed of missiles. */
 var missile_speed = 3;
 /** Rate of acceleration. */
@@ -49,6 +51,7 @@ export function reset(settings) {
     clearTimeout(pid);
     events = [];
     missiles = [];
+    deadAvatars = [];
     rank = [];
     for (const avatar of Pond.avatars) {
         avatar.reset();
@@ -78,7 +81,7 @@ function update() {
     updateMissiles();
     // Update the avatar states.
     updateAvatars();
-    if (Pond.avatars.length <= rank.length + 1) {
+    if (Pond.avatars.length <= deadAvatars.length + 1) {
         endTime = Math.min(endTime, Date.now() + 1000);
     }
     if (Date.now() > endTime) {

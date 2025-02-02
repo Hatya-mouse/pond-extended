@@ -205,7 +205,7 @@ function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
     gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
     gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = gradient;
-    ctx.fillRect(-waveWidth / 2, scaleFactor * 0.4, waveWidth, waveLength);
+    ctx.fillRect(-waveWidth / 2, scaleFactor * 0.8, waveWidth, waveLength);
 
     // Reset transformation matrix
     ctx.restore();

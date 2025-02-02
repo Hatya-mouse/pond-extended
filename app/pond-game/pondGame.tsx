@@ -1,5 +1,5 @@
 // Module Imports
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 // Pond Game
 import * as Pond from "@pond-game/pond/pond";
 import Avatar from "@app/types/avatar";
@@ -39,16 +39,15 @@ export default function PondGame({
     const [paused, setPaused] = useState(true);
     // Avatar's current information including health.
     const [avatarInfo, setAvatarInfo] = useState<Avatar[]>([]);
+    // Whether initialized
+    const hasInit = useRef<boolean>(false);
 
     const updateAvatarInfo = (newAvatarInfo: Avatar[]) => {
-        // Update the avatar's health.
-        setAvatarInfo([...newAvatarInfo]); // Create a new array reference
+        setAvatarInfo([...newAvatarInfo]);
     };
 
-    const start = () => {
-        // Reset if the game is not loaded.
+    const start = useCallback(() => {
         if (!started) {
-            updateSettings();
             Pond.reset(settings);
         }
         // Start the game.
@@ -58,27 +57,25 @@ export default function PondGame({
         setPaused(false);
         // Remove avatar highlight.
         Pond.highlightAvatar(NaN);
-    };
+    }, [started, settings]);
 
-    const pause = () => {
-        // Pause the game.
+    const pause = useCallback(() => {
         Pond.pause();
         // Set the paused flag.
         setPaused(true);
         // Highlight the selected avatar.
         Pond.highlightAvatar(selectedAvatar.id);
-    };
+    }, [selectedAvatar]);
 
-    const reset = () => {
-        updateSettings();
-        // Reset the game to its original state.
+    const reset = useCallback(() => {
+        // Reset the game.
         Pond.reset(settings);
         // Set the flags.
         setStarted(false);
         setPaused(true);
         // Highlight the selected avatar.
         Pond.highlightAvatar(selectedAvatar.id);
-    };
+    }, [settings, selectedAvatar]);
 
     const onGameEnd = useCallback(() => {
         setStarted(false);
@@ -101,30 +98,17 @@ export default function PondGame({
         const newHeight = canvas.clientHeight;
 
         requestAnimationFrame(() => {
-            setViewportSize({ width: newWidth, height: newHeight, });
-
-            setTimeout(() => {
-                Pond.redraw();
-            }, 50);
+            setViewportSize({ width: newWidth, height: newHeight });
+            setTimeout(Pond.redraw, 50);
         });
     }, [canvas]);
 
     useEffect(() => {
         if (!canvas) return;
-        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+        const resizeObserver = new ResizeObserver(resizeCanvas);
         resizeObserver.observe(canvas);
-        return () => resizeObserver.disconnect(); // clean up 
+        return () => resizeObserver.disconnect();
     }, [canvas, resizeCanvas]);
-
-    const updateSettings = useCallback(() => {
-        if (started) return;
-        onUpdateInGameSettings();
-        Pond.reset(settings);
-    }, [settings, started, onUpdateInGameSettings]);
-
-    useEffect(() => {
-        updateSettings();
-    }, [settings, updateSettings]);
 
     useEffect(() => {
         const viewport = document.getElementById("viewport") as HTMLCanvasElement;
@@ -132,26 +116,33 @@ export default function PondGame({
         setCanvas(viewport);
 
         const scratch = document.getElementById("scratch") as HTMLCanvasElement;
-        setScratchCanvasCtx(viewport.getContext("2d"));
+        setScratchCanvasCtx(scratch.getContext("2d"));
         setScratchCanvas(scratch);
     }, []);
 
     useEffect(() => {
-        if (
-            canvas &&
-            scratchCanvas &&
-            canvasCtx &&
-            scratchCanvasCtx
-        ) {
+        if (canvas && scratchCanvas && canvasCtx && scratchCanvasCtx) {
             Pond.init(canvas, scratchCanvas, inGameSettings, onGameEnd, updateAvatarInfo);
         }
     }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings, onGameEnd]);
+
+    useEffect(() => {
+        if (!started && settings !== inGameSettings) {
+            onUpdateInGameSettings();
+            reset();
+        }
+    }, [settings, inGameSettings, started, onUpdateInGameSettings, reset]);
+
+    if (!hasInit.current) {
+        reset();
+        hasInit.current = true;
+    }
 
     return (
         <div className="flex flex-col gap-2 left-area select-none">
             <canvas
                 id="scratch"
-                style={{ display: "none", }}
+                style={{ display: "none" }}
                 width={viewportSize.width}
                 height={viewportSize.height}
             ></canvas>

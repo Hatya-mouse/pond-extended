@@ -99,7 +99,7 @@ export default class Avatar {
         this.dead = true;
         this.damage = 100;
         this.damageCallback();
-        Battle.rank[0] = this;
+        Battle.deadAvatars.unshift(this);
     }
 
     /**

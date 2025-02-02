@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 // Utils
 import * as PondDataLoader from "@utils/pondDataLoader";
 import { PondSettings, AvatarData } from "@app/types/pond.types";
-import useInit from "./hooks/useInit";
 // UI Elements
 import PondGame from "@pond-game/pondGame";
 import SettingsView from "@pond/settingsView";
@@ -49,7 +48,7 @@ export default function Home() {
     }, [darkModeQuery]);
 
     // Babel loader effect
-    useInit(() => {
+    useEffect(() => {
         const script = document.createElement("script");
         script.src = "https://unpkg.com/@babel/standalone/babel.min.js";
         script.async = true;
@@ -58,7 +57,7 @@ export default function Home() {
         return () => {
             document.body.removeChild(script);
         };
-    });
+    }, []);
 
     const getAvatarDataFromId = useCallback((id: number): AvatarData | undefined => {
         return settings.avatars.filter((avatar) => avatar.id === id)[0];
