@@ -4,11 +4,11 @@ import { ColorResult } from "react-color";
 import clsx from "clsx";
 // UI Elements
 import IconButton from "@components/iconButton";
-import ColorPickerButton from "../components/colorPickerButton";
+import ColorPickerButton from "@components/colorPickerButton";
 // PondSettings class
 import { PondSettings, AvatarData } from "@app/types/pond.types";
 import "@app/globals.css";
-import ConfirmationModal from "../components/confirmationModal";
+import ConfirmationModal from "@components/confirmationModal";
 
 export default function SettingsView({
     className = "",
