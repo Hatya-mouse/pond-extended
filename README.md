@@ -1,5 +1,8 @@
 # Pond Extended
 
+![GitHub last commit](https://img.shields.io/github/last-commit/hatya-mouse/pond-extended)
+![GitHub deployments](https://img.shields.io/github/deployments/hatya-mouse/pond-extended/verecl)
+
 **Pond Extended** is an improved version of **Blockly Games' Pond** with additional features and enhancements.  
 Play now at [https://pond-extended.vercel.app](https://pond-extended.vercel.app/)
 
@@ -10,10 +13,6 @@ Play now at [https://pond-extended.vercel.app](https://pond-extended.vercel.app/
 - Customizable background and avatar color
 - Adjustable arena size
 - ...and more!
-
-## License
-
-This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Credits
 
@@ -32,7 +31,19 @@ This project uses icons from [Font Awesome](https://fontawesome.com).
 
 This project utilizes the following third-party libraries:
 
-- [CodeMirror](https://codemirror.net/) (MIT License)
-- [js-interpreter](https://github.com/NeilFraser/JS-Interpreter) (Apache-2.0 License)
+| Package | Description |
+| -- | -- |
+| [Next.js](https://nextjs.org/) | React framework for production |
+| [React](https://react.dev/) | JavaScript library for building user interfaces |
+| [CodeMirror](https://codemirror.net/) | In-browser code editor |
+| [js-interpreter](https://github.com/NeilFraser/JS-Interpreter) | JavaScript interpreter for sandboxed code execution |
+| [@babel/standalone](https://babeljs.io/) | Standalone build of Babel for browser usage |
+| [react-color](https://casesandberg.github.io/react-color/) | Color picker component for React |
+| [TypeScript](https://www.typescriptlang.org/) | JavaScript with syntax for types |
+| [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
 
 All other dependencies can be found in the `package.json` file.
+
+## License
+
+This project is licensed under the [**Apache License 2.0**](LICENSE), and free to use under the terms of use.
