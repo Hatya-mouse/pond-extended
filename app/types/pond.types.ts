@@ -1,3 +1,4 @@
+import { defaultDucks } from "@/public/duck/defaultDucks";
 import Avatar from "@app/types/avatar";
 
 export class PondSettings {
@@ -20,13 +21,10 @@ export class PondSettings {
     };
     avatars: AvatarData[] = [];
     editor = {
-        tabWidth: 4,
+        tabWidth: 2,
     };
     constructor() {
-        this.avatars.push(new AvatarData(1, "Player", { x: 20, y: 80 }, "#ff9c00", ""));
-        this.avatars.push(new AvatarData(2, "Rook", { x: 80, y: 80 }, "#da0026", ""));
-        this.avatars.push(new AvatarData(3, "Sniper", { x: 80, y: 20 }, "#334079", ""));
-        this.avatars.push(new AvatarData(4, "Counter", { x: 20, y: 20 }, "#277d1c", ""));
+        this.avatars = defaultDucks();
     }
 }
 

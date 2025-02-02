@@ -38,6 +38,14 @@ a:hover {
     transition: text-decoration 0.3s ease-in-out;
 }
 
+input[type="range"]:hover {
+    cursor: grab;
+}
+
+input[type="range"]:active {
+    cursor: grabbing;
+}
+
 .dark {
     a {
         color: #81c2ff;
