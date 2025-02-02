@@ -1,8 +1,8 @@
-import * as Battle from './battle.js';
-import * as Visualization from './visualization.js';
-import * as Transpile from '../utils/transpile.js';
-import Avatar from './avatar.js';
-import { PondSettings } from "@utils/pondSettings";
+import * as Battle from '@pond-core/battle.js';
+import * as Visualization from '@pond-core/visualization.js';
+import * as Transpile from '@pond-game/utils/transpile.js';
+import Avatar from '@app/types/avatar.js';
+import { PondSettings } from "@app/types/pond.types";
 
 /** Settings instance. */
 let settings_: PondSettings = new PondSettings();

@@ -1,12 +1,12 @@
 // Module Imports
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { ColorResult } from "react-color";
 import clsx from "clsx";
 // UI Elements
 import IconButton from "@components/iconButton";
 import ColorPickerButton from "../components/colorPickerButton";
 // PondSettings class
-import { PondSettings, AvatarData } from "@/app/utils/pondSettings";
+import { PondSettings, AvatarData } from "@app/types/pond.types";
 
 const defaultSettings = new PondSettings();
 
@@ -123,6 +123,11 @@ export default function SettingsView({
         return JSON.stringify(settings) !== JSON.stringify(tempSettings);
     }, [settings, tempSettings]);
 
+    /** Called when settings has changed */
+    useEffect(() => {
+        setTempSettings(settings);
+    }, [settings]);
+
     // Memoize the avatar list to prevent unnecessary re-renders
     const avatarList = useMemo(() => (
         tempSettings.avatars.map((avatar, index) => (
@@ -231,6 +236,7 @@ export default function SettingsView({
             <div className="settings-container">
                 {/* Game settings */}
                 <h1>Game</h1>
+                {/* FPS */}
                 <h2>FPS</h2>
                 <p>Adjust the fps.</p>
                 <label>
@@ -256,6 +262,7 @@ export default function SettingsView({
                         max="500"
                     />
                 </label>
+                {/* Tick Speed */}
                 <h2>Tick Speed</h2>
                 <p>Adjust the number of script executions per second. Higher tick speed may impact performance.</p>
                 <label>
@@ -281,6 +288,30 @@ export default function SettingsView({
                         max="500"
                     />
                 </label>
+                {/* SFX Volume */}
+                <h2>Volume</h2>
+                <p>Adjust the volume of sfx.</p>
+                <label>
+                    <input
+                        className="w-52"
+                        type="range"
+                        value={tempSettings.game.volume * 100}
+                        onChange={(e) =>
+                            updateTemp("game", {
+                                ...tempSettings.game,
+                                volume: parseInt(e.target.value ? e.target.value : "0") / 100
+                            })
+                        }
+                        // Clamp the number when focus out.
+                        onBlur={(e) =>
+                            updateTemp("game", {
+                                ...tempSettings.game,
+                                volume: clamp(parseInt(e.target.value ? e.target.value : "0") / 100, 0, 1)
+                            })
+                        }
+                    />
+                </label>
+
                 {/* Viewport settings */}
                 <h1>Viewport</h1>
                 <h2>Viewport Size</h2>

@@ -1,6 +1,6 @@
-import * as Utils from '../utils/utils';
-import * as Battle from './battle';
-import * as Pond from './pond';
+import * as Utils from '@pond-game/utils/utils';
+import * as Battle from '@pond-core/battle';
+import * as Pond from '@pond-core/pond';
 import Interpreter from 'js-interpreter';
 
 export default class Avatar {

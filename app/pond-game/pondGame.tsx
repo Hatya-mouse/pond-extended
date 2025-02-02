@@ -2,9 +2,9 @@
 import { useEffect, useState, useCallback } from "react";
 // Pond Game
 import * as Pond from "@pond-game/pond/pond";
-import Avatar from "@pond-game/pond/avatar";
+import Avatar from "@app/types/avatar";
 // Settings type
-import { AvatarData, PondSettings } from "@utils/pondSettings";
+import { AvatarData, PondSettings } from "@app/types/pond.types";
 // UI Elements
 import ControlBar from "@pond/controlBar";
 import PlayerList from "@pond/playerList";

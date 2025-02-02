@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
 // Utils
 import * as PondDataLoader from "@utils/pondDataLoader";
-import { PondSettings, AvatarData } from "@utils/pondSettings";
+import { PondSettings, AvatarData } from "@app/types/pond.types";
 import useInit from "./hooks/useInit";
 // UI Elements
 import PondGame from "@pond-game/pondGame";

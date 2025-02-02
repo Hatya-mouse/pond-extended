@@ -2,7 +2,7 @@
 import * as prettier from "prettier/standalone";
 import estree from "prettier/plugins/estree";
 import meriyah from "prettier/plugins/meriyah";
-import { AvatarData } from "@utils/pondSettings";
+import { AvatarData } from "@app/types/pond.types";
 
 export interface FormatRequest {
     order: "format";

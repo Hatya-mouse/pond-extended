@@ -37,6 +37,15 @@
             ],
             "@utils/*": [
                 "./app/utils/*"
+            ],
+            "@sfx/*": [
+                "./sfx/*"
+            ],
+            "@app/*": [
+                "./app/*"
+            ],
+            "@pond-core/*": [
+                "./app/pond-game/pond/*"
             ]
         }
     },
@@ -44,7 +53,8 @@
         "next-env.d.ts",
         "**/*.ts",
         "**/*.tsx",
-        ".next/types/**/*.ts"
+        ".next/types/**/*.ts",
+        "app/types/avatar.js"
     ],
     "exclude": [
         "node_modules"

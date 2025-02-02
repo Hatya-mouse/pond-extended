@@ -23,9 +23,22 @@ export default function CreditView({
             </div>
             <div className="flex-row gap-2 p-2">
                 <Link className="font-bold" href="https://github.com/Hatya-mouse/pond-extended" target="_blank" rel="noopener noreferrer">Pond Extended</Link>
-                <p>Developed by <Link href="https://github.com/Hatya-mouse" target="_blank" rel="noopener noreferrer">Hatya Mouse</Link>.</p>
-                <p>Based on <Link href="https://blockly.games" target="_blank" rel="noopener noreferrer">Blockly Games - Pond</Link> developed by Google and is available under the <Link href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">Apache-2.0 License</Link>.
-                </p>
+                <p>Developed by <Link href="https://github.com/Hatya-mouse" target="_blank" rel="noopener noreferrer">Shuntaro Kasatani</Link>.</p>
+                <p>Based on <Link href="https://blockly.games/pond-duck" target="_blank" rel="noopener noreferrer">Blockly Games - Pond</Link> developed by Google.</p>
+                <p><Link href="https://github.com/google/blockly-games" target="_blank" rel="noopener noreferrer">Original blockly.games repository</Link> is available under the <Link href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">Apache-2.0 License</Link>.</p>
+
+                <p className="font-bold">SFX</p>
+                <ul>
+                    <li>
+                        <Link href="https://freesound.org/people/soundscalpel.com/sounds/110393/">water_splash.wav</Link> by <Link href="https://freesound.org/people/soundscalpel.com/">soundscalpel.com</Link> | License: <Link href="http://creativecommons.org/licenses/by/3.0/">Attribution 3.0</Link>
+                    </li>
+                    <li>
+                        <Link href="https://freesound.org/people/jorickhoofd/sounds/179265/">Exploding lightbulb 1</Link> by <Link href="https://freesound.org/people/jorickhoofd/">jorickhoofd</Link> | License: <Link href="https://creativecommons.org/licenses/by/4.0/">Attribution 4.0</Link>
+                    </li>
+                    <li>
+                        <Link href="https://freesound.org/people/jorickhoofd/sounds/189158/" target="_blank" rel="noopener noreferrer">First person face punch 2</Link> by <Link href="https://freesound.org/people/jorickhoofd/" target="_blank" rel="noopener noreferrer">jorickhoofd</Link> | License: <Link href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Attribution 4.0</Link>
+                    </li>
+                </ul>
             </div>
         </div >
     );

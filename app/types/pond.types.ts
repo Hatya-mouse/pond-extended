@@ -1,7 +1,10 @@
+import Avatar from "@app/types/avatar";
+
 export class PondSettings {
     game = {
         fps: 50,
         tps: 50,
+        volume: 1.0,
     };
     viewport = {
         width: 100,
@@ -47,4 +50,27 @@ export class AvatarData {
         this.color = color;
         this.script = script;
     }
+}
+
+export interface Location {
+    x: number;
+    y: number;
+}
+
+export interface Missile {
+    avatar: Avatar;
+    startLoc: Location;
+    endLoc: Location;
+    range: number;
+    progress: number;
+}
+
+export interface Event {
+    type: 'CRASH' | 'SCAN' | 'BANG' | 'BOOM' | 'DIE';
+    avatar?: Avatar;
+    damage?: number;
+    x?: number;
+    y?: number;
+    degree?: number;
+    resolution?: number;
 }

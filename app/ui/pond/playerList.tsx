@@ -1,8 +1,8 @@
 // Module Import
 import clsx from "clsx"
 // Pond Game Imports
-import Avatar from "@pond-game/pond/avatar";
-import { PondSettings } from "@/app/utils/pondSettings";
+import Avatar from "@app/types/avatar";
+import { PondSettings } from "@app/types/pond.types";
 
 export default function PlayerList({
     avatars,

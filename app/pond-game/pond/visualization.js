@@ -1,6 +1,7 @@
-import * as Utils from '../utils/utils';
-import * as Pond from './pond';
-import * as Battle from './battle';
+import * as Utils from '@pond-game/utils/utils';
+import * as Pond from '@pond-core/pond';
+import * as Battle from '@pond-core/battle';
+import * as Audio from '@pond-core/audio';
 
 /** Private variable to hold the highlighted avatar index */
 let _highlightedAvatar = NaN;
@@ -9,6 +10,10 @@ let _highlightedAvatar = NaN;
 var avatarSize = 4.0;
 /** Length of the beam. */
 var beamLength = 50.0;
+/** Timestamp of recent crashes. Use avatar's id as a key. */
+var crashLog = new Map();
+/** Cannon landing locations. */
+var explosions = [];
 /** Viewport canvas. */
 var viewport;
 /** Canvas for scratch. */
@@ -26,22 +31,35 @@ var lastDelay = 0;
 /** Pond game settings. */
 var _settings = {};
 
-/** Initializa the canvas. */
+/** Initialize the canvas. */
 export function init(canvas, scratch, settings) {
     // Get the canvas.
     viewport = canvas;
     scratchCanvas = scratch;
     ctxViewport = canvas.getContext('2d');
     ctxScratch = scratch.getContext('2d');
-    // Get the settings;
+    // Get the settings.
     _settings = settings;
+
+    // Load the audio.
+    Audio.loadAudio('/sfx/boom.mp3', 'boom');
+    Audio.loadAudio('/sfx/fire.wav', 'fire');
+    Audio.loadAudio('/sfx/splash.mp3', 'splash');
+    Audio.loadAudio('/sfx/whack.mp3', 'whack');
+    // Set the volume.
+    Audio.setVolume(_settings.game.volume);
+
     // Draw.
     draw();
 }
 
 /** Stop and reset the visualization, and draw once. */
 export function reset(settings) {
+    // Get the settings.
     _settings = settings;
+    // Set the volume.
+    Audio.setVolume(_settings.game.volume);
+    // Stop, and draw.
     stop();
     draw();
 }
@@ -123,9 +141,33 @@ function draw() {
     // Draw events.
     for (const event of Battle.events) {
         const avatar = event.avatar;
-        if (event.type === 'SCAN') {
+        if (event.type === 'CRASH') {
+            const lastCrash = crashLog.get(avatar.id);
+            if (!lastCrash || lastCrash + 100 < Date.now()) {
+                // Play the crash sound.
+                Audio.playAudio('whack', event.damage / Battle.collisionDamage);
+                // Add the time to the crash log.
+                crashLog.set(avatar.id, Date.now());
+            }
+        } else if (event.type === 'SCAN') {
             // Draw a scan beam.
             drawBeam(ctx, event, avatar);
+        } else if (event.type === 'BANG') {
+            // Play fire sound when the cannon is fired.
+            Audio.playAudio('fire');
+        } else if (event.type === 'BOOM') {
+            // Play damage sound.
+            if (event['damage']) {
+                Audio.playAudio('boom', event.damage / 10);
+            }
+            explosions.push({
+                x: event.x,
+                y: event.y,
+                t: 0,
+            });
+        } else if (event.type === 'DIE') {
+            // Play sink sound.
+            Audio.playAudio('splash');
         }
     }
     // Remove all events to prevent events to be shown in the next frame.
@@ -388,13 +430,13 @@ function getColour(avatar) {
 
 /**
  * Darkens a hexadecimal color by a given percentage.
- * @param {string} hexColor - The hexadecimal color code (e.g., "#FF5733").
+ * @param {string} hexColor - The hexadecimal color code (e.g., '#FF5733').
  * @param {number} amount - The percentage to darken the color (0 to 1, where 0.1 means 10% darker).
  * @returns {string} The darkened hexadecimal color code.
  */
 export function darkenHexColor(hexColor, amount = 0.1) {
-    // Remove the "#" if present
-    hexColor = hexColor.replace(/^#/, "");
+    // Remove the '#' if present
+    hexColor = hexColor.replace(/^#/, '');
 
     // Parse the hexadecimal color into RGB values
     const r = parseInt(hexColor.substring(0, 2), 16);
@@ -409,6 +451,6 @@ export function darkenHexColor(hexColor, amount = 0.1) {
     const newB = darken(b);
 
     // Convert the darkened RGB values back to a hexadecimal color string
-    const toHex = (value) => value.toString(16).padStart(2, "0");
+    const toHex = (value) => value.toString(16).padStart(2, '0');
     return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
 }

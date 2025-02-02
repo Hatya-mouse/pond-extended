@@ -1,4 +1,4 @@
-import { PondSettings } from "@utils/pondSettings";
+import { PondSettings } from "@app/types/pond.types";
 
 /**
  * Type definition for the pond game data structure.
@@ -19,25 +19,48 @@ function validateSettings(settings: unknown): settings is PondSettings {
     // Type assertion with type predicate for type-safe property access
     const s = settings as Partial<PondSettings>;
 
-    return (
-        // Check if avatars is an array and each avatar has required properties
-        Array.isArray(s.avatars) &&
-        s.avatars?.every((a) =>
-            typeof a === 'object' && a !== null &&
-            'id' in a && typeof a.id === 'number' &&
-            'name' in a && typeof a.name === 'string' &&
-            'color' in a && typeof a.color === 'string' &&
-            'loc' in a && typeof a.loc === 'object' && a.loc !== null &&
-            'x' in a.loc && typeof a.loc.x === 'number' &&
-            'y' in a.loc && typeof a.loc.y === 'number' &&
-            'script' in a && typeof a.script === 'string'
-        ) &&
-        // Check if viewport exists and has required properties
-        s.viewport !== undefined &&
-        typeof s.viewport === 'object' &&
-        'width' in s.viewport && typeof s.viewport.width === 'number' &&
-        'height' in s.viewport && typeof s.viewport.height === 'number'
-    );
+    // Validate game settings
+    if (!s.game || typeof s.game !== 'object') return false;
+    if (typeof s.game.fps !== 'number' || s.game.fps <= 0) return false;
+    if (typeof s.game.tps !== 'number' || s.game.tps <= 0) return false;
+    if (typeof s.game.volume !== 'number' || s.game.volume < 0 || s.game.volume > 1) return false;
+
+    // Validate viewport settings
+    if (!s.viewport || typeof s.viewport !== 'object') return false;
+    if (typeof s.viewport.width !== 'number' || s.viewport.width <= 0) return false;
+    if (typeof s.viewport.height !== 'number' || s.viewport.height <= 0) return false;
+    if (typeof s.viewport.backgroundColor !== 'string') return false;
+
+    // Validate avatar settings
+    if (!s.avatar || typeof s.avatar !== 'object') return false;
+    if (typeof s.avatar.billColor1 !== 'string') return false;
+    if (typeof s.avatar.billColor2 !== 'string') return false;
+    if (typeof s.avatar.circleColor !== 'string') return false;
+    if (typeof s.avatar.outerEyeColor !== 'string') return false;
+    if (typeof s.avatar.innerEyeColor !== 'string') return false;
+
+    // Validate editor settings
+    if (!s.editor || typeof s.editor !== 'object') return false;
+    if (typeof s.editor.tabWidth !== 'number' || s.editor.tabWidth <= 0) return false;
+
+    // Validate avatars array
+    if (!Array.isArray(s.avatars)) return false;
+
+    // Validate each avatar in the array
+    return s.avatars.every(avatar => {
+        if (!avatar || typeof avatar !== 'object') return false;
+
+        return (
+            typeof avatar.id === 'number' &&
+            typeof avatar.name === 'string' &&
+            typeof avatar.color === 'string' &&
+            typeof avatar.script === 'string' &&
+            avatar.loc &&
+            typeof avatar.loc === 'object' &&
+            typeof avatar.loc.x === 'number' &&
+            typeof avatar.loc.y === 'number'
+        );
+    });
 }
 
 /**

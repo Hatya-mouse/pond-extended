@@ -1,7 +1,7 @@
 "use client"
 
-import * as Pond from './pond';
-import * as Utils from '../utils/utils';
+import * as Pond from '@pond-core/pond';
+import * as Utils from '@pond-game/utils/utils';
 
 /** List of events to be visualized. */
 export var events = [];
@@ -20,9 +20,9 @@ var statementsPerFrame = 100;
 /** Speed of avatars' movement. */
 var avatarSpeed = 1;
 /** Center to center distance for avatars to collide. */
-var collisionRadius = 5;
+var collisionRadius = 8;
 /** Damage from worst-case collision. */
-var collisionDamage = 3;
+export var collisionDamage = 3;
 /** PID of executing task. */
 var pid = 0;
 /** Time to end the battle, in milliseconds. */
@@ -34,17 +34,17 @@ var doneCallback_ = 0;
 /** Current interpreter processing avatar. */
 var currentAvatar = 0;
 /** Pond game settings. */
-var _settings = {};
+var settings_ = {};
 
 /** Initializa the battle. */
 export function init(settings) {
-    _settings = settings;
+    settings_ = settings;
 }
 
 /** Reset the field. */
 export function reset(settings) {
     // Get the settings.
-    _settings = settings;
+    settings_ = settings;
     // Reset the battle.
     clearTimeout(pid);
     events.length = 0;
@@ -85,7 +85,7 @@ function update() {
         stop();
     } else {
         // Do it all again in the moment.
-        pid = setTimeout(update, 1000 / _settings.game.tps);
+        pid = setTimeout(update, 1000 / settings_.game.tps);
     }
 }
 
@@ -159,8 +159,7 @@ function updateAvatars() {
         // Move.
         if (avatar.speed > 0) {
             // Get the closest avatar.
-            const tuple = closestNeighbour(avatar);
-            const closestBefore = tuple[1];
+            const [, closestBefore] = closestNeighbour(avatar);
             // Get the movement from the angle and the speed.
             const angleRadians = Utils.math.degToRad(avatar.degree);
             const speed = avatar.speed / 100 * avatarSpeed;
@@ -170,11 +169,11 @@ function updateAvatars() {
             avatar.loc.x += dx;
             avatar.loc.y += dy;
             // Check if the avatar hit the edge.
-            if (avatar.loc.x < 0 || avatar.loc.x > 100 ||
-                avatar.loc.y < 0 || avatar.loc.y > 100) {
+            if (avatar.loc.x < 0 || avatar.loc.x > settings_.viewport.width ||
+                avatar.loc.y < 0 || avatar.loc.y > settings_.viewport.height) {
                 // Clamp the location of the avatar.
-                avatar.loc.x = Utils.math.clamp(avatar.loc.x, 0, 100);
-                avatar.loc.y = Utils.math.clamp(avatar.loc.y, 0, 100);
+                avatar.loc.x = Utils.math.clamp(avatar.loc.x, 0, settings_.viewport.width);
+                avatar.loc.y = Utils.math.clamp(avatar.loc.y, 0, settings_.viewport.height);
                 // Calculate and give damage to the avatar.
                 const damage = avatar.speed / 100 * collisionDamage;
                 avatar.addDamage(damage);
@@ -248,7 +247,7 @@ function closestNeighbour(avatar) {
     let distance = Infinity;
     for (const neighbour of Pond.avatars) {
         if (!neighbour.dead && avatar !== neighbour) {
-            const thisDistance = Math.min(distance, Utils.math.getDistance(avatar.loc, neighbour.loc));
+            const thisDistance = Math.min(distance, Utils.math.getDistance(avatar.loc.x, avatar.loc.y, neighbour.loc.x, neighbour.loc.y));
             if (thisDistance < distance) {
                 distance = thisDistance;
                 closest = neighbour;

@@ -10,9 +10,9 @@ import { linter, lintGutter } from "@codemirror/lint";
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import * as esLintBrowserify from "eslint-linter-browserify";
 // Formatter WebWorker
-import { FormatRequest, FormatResponse } from "@/app/utils/editorDoWork";
+import { FormatRequest, FormatResponse } from "@app/utils/editorDoWork";
 // Pond Game
-import { PondSettings, AvatarData } from "@utils/pondSettings";
+import { PondSettings, AvatarData } from "@app/types/pond.types";
 // Components
 import IconButton from "@components/iconButton";
 
