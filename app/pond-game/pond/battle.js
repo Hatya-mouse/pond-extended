@@ -20,7 +20,7 @@ var statementsPerFrame = 100;
 /** Speed of avatars' movement. */
 var avatarSpeed = 1;
 /** Center to center distance for avatars to collide. */
-var collisionRadius = 8;
+var collisionRadius = 7;
 /** Damage from worst-case collision. */
 export var collisionDamage = 3;
 /** PID of executing task. */

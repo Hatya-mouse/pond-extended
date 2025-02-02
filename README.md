@@ -26,6 +26,8 @@ This project includes sound effects from [Freesound](https://freesound.org):
 - **[Exploding lightbulb 1](https://freesound.org/people/jorickhoofd/sounds/179265/)** by [jorickhoofd](https://freesound.org/people/jorickhoofd/) | License: [Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)
 - **[First person face punch 2](https://freesound.org/people/jorickhoofd/sounds/189158/)** by [jorickhoofd](https://freesound.org/people/jorickhoofd/) | License: [Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)
 
+This project uses icons from [Font Awesome](https://fontawesome.com).
+
 ## Third-party Modules
 
 This project utilizes the following third-party libraries:

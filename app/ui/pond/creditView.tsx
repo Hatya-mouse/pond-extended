@@ -14,7 +14,7 @@ export default function CreditView({
 }) {
     return (
         <div className={clsx(
-            "float-container credit-view flex-row gap-2",
+            "float-container credit-view flex-row gap-2 m-4",
             darkMode && "dark",
         )}>
             <div className="default-header gap-2">
@@ -25,7 +25,7 @@ export default function CreditView({
                 <Link className="font-bold" href="https://github.com/Hatya-mouse/pond-extended" target="_blank" rel="noopener noreferrer">Pond Extended</Link>
                 <p>Developed by <Link href="https://github.com/Hatya-mouse" target="_blank" rel="noopener noreferrer">Shuntaro Kasatani</Link>.</p>
                 <p>Based on <Link href="https://blockly.games/pond-duck" target="_blank" rel="noopener noreferrer">Blockly Games - Pond</Link> developed by Google.</p>
-                <p><Link href="https://github.com/google/blockly-games" target="_blank" rel="noopener noreferrer">Original blockly.games repository</Link> is available under the <Link href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">Apache-2.0 License</Link>.</p>
+                <p><Link href="https://github.com/google/blockly-games" target="_blank" rel="noopener noreferrer">Original source code</Link> of Blockly Games is available under the <Link href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">Apache-2.0 License</Link>.</p>
 
                 <p className="font-bold">SFX</p>
                 <ul>
@@ -39,7 +39,10 @@ export default function CreditView({
                         <Link href="https://freesound.org/people/jorickhoofd/sounds/189158/" target="_blank" rel="noopener noreferrer">First person face punch 2</Link> by <Link href="https://freesound.org/people/jorickhoofd/" target="_blank" rel="noopener noreferrer">jorickhoofd</Link> | License: <Link href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Attribution 4.0</Link>
                     </li>
                 </ul>
+
+                <p className="font-bold">Icons</p>
+                <p>This work includes icons from <Link href="https://fontawesome.com" target="_blank" rel="noopener noreferrer">Font Awesome</Link>.</p>
             </div>
-        </div >
-    );
+        </div>
+    )
 }
