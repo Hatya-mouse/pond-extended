@@ -6,7 +6,7 @@ import clsx from "clsx";
 import IconButton from "@components/iconButton";
 import ColorPickerButton from "@components/colorPickerButton";
 // PondSettings class
-import { PondSettings, AvatarData } from "@app/types/pond.types";
+import { PondSettings, DuckData } from "@app/types/pond.types";
 import "@app/globals.css";
 import ConfirmationModal from "@components/confirmationModal";
 
@@ -35,21 +35,21 @@ export default function SettingsView({
         }));
     }, []);
 
-    /** Remove the avatar - memoized */
-    const removeAvatar = useCallback((id: number) => {
+    /** Remove the duck - memoized */
+    const removeDuck = useCallback((id: number) => {
         setTempSettings(prev => ({
             ...prev,
-            avatars: prev.avatars.filter((avatar) => avatar.id !== id)
+            ducks: prev.ducks.filter((duck) => duck.id !== id)
         }));
     }, []);
 
-    /** Add an avatar - memoized */
-    const appendAvatar = useCallback(() => {
+    /** Add an duck - memoized */
+    const appendDuck = useCallback(() => {
         setTempSettings(prev => ({
             ...prev,
-            avatars: [...prev.avatars, new AvatarData(
+            ducks: [...prev.ducks, new DuckData(
                 Date.now(),
-                `Duck ${prev.avatars.length + 1}`,
+                `Duck ${prev.ducks.length + 1}`,
                 { x: 0, y: 0 },
                 "#ff9c00",
                 ""
@@ -57,39 +57,39 @@ export default function SettingsView({
         }));
     }, []);
 
-    /** Update the avatar's position - memoized */
+    /** Update the duck's position - memoized */
     const updatePosition = useCallback((id: number, axis: "x" | "y", value: number) => {
         if (!value) return;
         setTempSettings(prev => ({
             ...prev,
-            avatars: prev.avatars.map((avatar) =>
-                avatar.id === id
-                    ? { ...avatar, loc: { ...avatar.loc, [axis]: value } }
-                    : avatar
+            ducks: prev.ducks.map((duck) =>
+                duck.id === id
+                    ? { ...duck, loc: { ...duck.loc, [axis]: value } }
+                    : duck
             )
         }));
     }, []);
 
-    /** Update the avatar's name - memoized */
-    const updateAvatarName = useCallback((id: number, name: string) => {
+    /** Update the duck's name - memoized */
+    const updateDuckName = useCallback((id: number, name: string) => {
         setTempSettings(prev => ({
             ...prev,
-            avatars: prev.avatars.map((avatar) =>
-                avatar.id === id
-                    ? { ...avatar, name }
-                    : avatar
+            ducks: prev.ducks.map((duck) =>
+                duck.id === id
+                    ? { ...duck, name }
+                    : duck
             )
         }));
     }, []);
 
-    /** Update the avatar's color - memoized */
-    const updateAvatarColor = useCallback((id: number, color: string) => {
+    /** Update the duck's color - memoized */
+    const updateDuckColor = useCallback((id: number, color: string) => {
         setTempSettings(prev => ({
             ...prev,
-            avatars: prev.avatars.map((avatar) =>
-                avatar.id === id
-                    ? { ...avatar, color }
-                    : avatar
+            ducks: prev.ducks.map((duck) =>
+                duck.id === id
+                    ? { ...duck, color }
+                    : duck
             )
         }));
     }, []);
@@ -130,35 +130,35 @@ export default function SettingsView({
         setTempSettings(settings);
     }, [settings]);
 
-    // Memoize the avatar list to prevent unnecessary re-renders
-    const avatarList = useMemo(() => (
-        tempSettings.avatars.map((avatar, index) => (
+    // Memoize the duck list to prevent unnecessary re-renders
+    const duckList = useMemo(() => (
+        tempSettings.ducks.map((duck, index) => (
             <div className={clsx({
-                "avatar-list-item": true,
+                "duck-list-item": true,
                 "bg-opacity-5 bg-gray-500": index % 2 > 0,
-            })} key={avatar.id}>
+            })} key={duck.id}>
                 {/* Remove button */}
                 <IconButton
                     className="fa-solid fa-minus"
-                    disabled={tempSettings.avatars.length < 3}
-                    tooltip={`Remove ${avatar.name}`}
+                    disabled={tempSettings.ducks.length < 3}
+                    tooltip={`Remove ${duck.name}`}
                     onClick={() =>
-                        removeAvatar(avatar.id)
+                        removeDuck(duck.id)
                     }
                 />
                 {/* Color Picker button */}
                 <ColorPickerButton
-                    color={avatar.color}
-                    onChange={(color: ColorResult) => updateAvatarColor(avatar.id, color.hex)}
+                    color={duck.color}
+                    onChange={(color: ColorResult) => updateDuckColor(duck.id, color.hex)}
                     darkMode={darkMode}
                 />
                 {/* Name */}
                 <input
                     className="w-48"
                     type="text"
-                    value={avatar.name}
+                    value={duck.name}
                     onChange={(e) =>
-                        updateAvatarName(avatar.id, e.target.value)
+                        updateDuckName(duck.id, e.target.value)
                     }
                 />
                 {/* Position */}
@@ -167,14 +167,14 @@ export default function SettingsView({
                     <input
                         className="ml-2 w-48"
                         type="number"
-                        value={avatar.loc.x}
+                        value={duck.loc.x}
                         onChange={(e) =>
-                            updatePosition(avatar.id, "x", parseInt(e.target.value))
+                            updatePosition(duck.id, "x", parseInt(e.target.value))
                         }
                         // Clamp the number when focus out.
                         onBlur={(e) =>
                             updatePosition(
-                                avatar.id,
+                                duck.id,
                                 "x",
                                 clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
                             )
@@ -188,14 +188,14 @@ export default function SettingsView({
                     <input
                         className="ml-2 mr-2 w-48"
                         type="number"
-                        value={avatar.loc.y}
+                        value={duck.loc.y}
                         onChange={(e) =>
-                            updatePosition(avatar.id, "y", parseInt(e.target.value))
+                            updatePosition(duck.id, "y", parseInt(e.target.value))
                         }
                         // Clamp the number when focus out.
                         onBlur={(e) =>
                             updatePosition(
-                                avatar.id,
+                                duck.id,
                                 "y",
                                 clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
                             )
@@ -206,7 +206,7 @@ export default function SettingsView({
                 </label>
             </div>
         ))
-    ), [tempSettings.viewport, tempSettings.avatars, darkMode, clamp, removeAvatar, updateAvatarColor, updateAvatarName, updatePosition]);
+    ), [tempSettings.viewport, tempSettings.ducks, darkMode, clamp, removeDuck, updateDuckColor, updateDuckName, updatePosition]);
 
     return (
         <div className={`settings-view float-container ${className}`}>
@@ -389,15 +389,15 @@ export default function SettingsView({
                     <ColorPickerButton
                         className="mr-1"
                         width="64px"
-                        color={tempSettings.avatar.billColor1}
-                        onChange={(color: ColorResult) => updateTemp("avatar", { ...tempSettings.avatar, billColor1: color.hex })}
+                        color={tempSettings.duck.billColor1}
+                        onChange={(color: ColorResult) => updateTemp("duck", { ...tempSettings.duck, billColor1: color.hex })}
                         darkMode={darkMode}
                     />
                     Color 2
                     <ColorPickerButton
                         width="64px"
-                        color={tempSettings.avatar.billColor2}
-                        onChange={(color: ColorResult) => updateTemp("avatar", { ...tempSettings.avatar, billColor2: color.hex })}
+                        color={tempSettings.duck.billColor2}
+                        onChange={(color: ColorResult) => updateTemp("duck", { ...tempSettings.duck, billColor2: color.hex })}
                         darkMode={darkMode}
                     />
                 </div>
@@ -405,8 +405,8 @@ export default function SettingsView({
                 <ColorPickerButton
                     className="mr-1"
                     width="64px"
-                    color={tempSettings.avatar.circleColor}
-                    onChange={(color: ColorResult) => updateTemp("avatar", { ...tempSettings.avatar, circleColor: color.hex })}
+                    color={tempSettings.duck.circleColor}
+                    onChange={(color: ColorResult) => updateTemp("duck", { ...tempSettings.duck, circleColor: color.hex })}
                     darkMode={darkMode}
                 />
                 {/* Duck eye color */}
@@ -416,36 +416,36 @@ export default function SettingsView({
                     <ColorPickerButton
                         className="mr-1"
                         width="64px"
-                        color={tempSettings.avatar.innerEyeColor}
-                        onChange={(color: ColorResult) => updateTemp("avatar", { ...tempSettings.avatar, innerEyeColor: color.hex })}
+                        color={tempSettings.duck.innerEyeColor}
+                        onChange={(color: ColorResult) => updateTemp("duck", { ...tempSettings.duck, innerEyeColor: color.hex })}
                         darkMode={darkMode}
                     />
                     Outer
                     <ColorPickerButton
                         width="64px"
-                        color={tempSettings.avatar.outerEyeColor}
-                        onChange={(color: ColorResult) => updateTemp("avatar", { ...tempSettings.avatar, outerEyeColor: color.hex })}
+                        color={tempSettings.duck.outerEyeColor}
+                        onChange={(color: ColorResult) => updateTemp("duck", { ...tempSettings.duck, outerEyeColor: color.hex })}
                         darkMode={darkMode}
                     />
                 </div>
-                {/* Avatar list */}
+                {/* Duck list */}
                 <h2>Edit Ducks</h2>
                 <p>Add, edit or remove ducks.</p>
-                {/* Editable avatar list */}
-                <div className="avatar-list-container">
+                {/* Editable duck list */}
+                <div className="duck-list-container">
                     <div className="default-header">
                         {/* Add button */}
                         <IconButton
                             className="fa-solid fa-plus"
-                            tooltip="Add Avatar"
+                            tooltip="Add Duck"
                             onClick={() =>
-                                appendAvatar()
+                                appendDuck()
                             }
                         />
                     </div>
-                    {/* Show Avatar list */}
-                    <div className="avatar-list">
-                        {avatarList}
+                    {/* Show Duck list */}
+                    <div className="duck-list">
+                        {duckList}
                     </div>
                 </div>
 

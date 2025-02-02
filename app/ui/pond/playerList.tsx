@@ -1,55 +1,55 @@
 // Module Import
 import clsx from "clsx"
 // Pond Game Imports
-import Avatar from "@app/types/avatar";
+import Duck from "@app/types/duck";
 import { PondSettings } from "@app/types/pond.types";
 
 export default function PlayerList({
-    avatars,
+    ducks,
     latestSettings,
-    onSelectAvatar = () => { },
+    onSelectDuck = () => { },
 }: {
-    avatars: Avatar[],
+    ducks: Duck[],
     /**
      * Latest settings used to check the diff between
-     * current the in-game avatars and the latest settings avatars.
+     * current the in-game ducks and the latest settings ducks.
      */
     latestSettings: PondSettings,
     /**
-     * Called when the avatar is selected.
-     * @param {number} _ ID of the selected avatar, not index.
+     * Called when the duck is selected.
+     * @param {number} _ ID of the selected duck, not index.
      */
-    onSelectAvatar?: (_: number) => void,
+    onSelectDuck?: (_: number) => void,
 }) {
     return (
         <div className="float-container">
-            {avatars.map((avatar, index) => (
+            {ducks.map((duck, index) => (
                 <div
                     className={clsx(
                         "player-list-item",
-                        index < avatars.length - 1 && "list-border-bottom",
+                        index < ducks.length - 1 && "list-border-bottom",
                         index % 2 > 0 && "bg-opacity-5 bg-gray-500",
                     )}
-                    key={avatar.id}
-                    onMouseDown={() => onSelectAvatar(avatar.id)}
+                    key={duck.id}
+                    onMouseDown={() => onSelectDuck(duck.id)}
                 >
                     {/* Health bar */}
                     <div
                         className="overflow-visible"
                         style={{
-                            backgroundColor: avatar.colour,
-                            width: `${(100 - avatar.damage)}%`,
+                            backgroundColor: duck.colour,
+                            width: `${(100 - duck.damage)}%`,
                         }}
                     >
                         <div className={clsx(
                             "p-1 px-2",
                             "player-list-item-text",
-                            avatar.dead ? "text-red-400" : "text-white"
+                            duck.dead ? "text-red-400" : "text-white"
                         )}>
-                            {/* Show avatar's name. */}
-                            {avatar.name}
+                            {/* Show duck's name. */}
+                            {duck.name}
                             {
-                                latestSettings.avatars.filter((data) => data.id === avatar.id).length === 0 &&
+                                latestSettings.ducks.filter((data) => data.id === duck.id).length === 0 &&
                                 <div className="text-gray-200">Removed</div>
                             }
                         </div>

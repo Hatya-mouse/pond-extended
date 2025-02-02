@@ -3,14 +3,14 @@ import * as Pond from '@pond-core/pond';
 import * as Battle from '@pond-core/battle';
 import * as Audio from '@pond-core/audio';
 
-/** Private variable to hold the highlighted avatar index */
-let _highlightedAvatar = NaN;
+/** Private variable to hold the highlighted duck index */
+let _highlightedDuck = NaN;
 
-/** Actual avatar size to be shown. */
-var avatarSize = 4.0;
+/** Actual duck size to be shown. */
+var duckSize = 4.0;
 /** Length of the beam. */
 var beamLength = 50.0;
-/** Timestamp of recent crashes. Use avatar's id as a key. */
+/** Timestamp of recent crashes. Use duck's id as a key. */
 var crashLog = new Map();
 /** Cannon landing locations. */
 var explosions = [];
@@ -64,9 +64,9 @@ export function reset(settings) {
     draw();
 }
 
-// Setter for highlightedAvatar
-export function setHighlightedAvatar(index) {
-    _highlightedAvatar = index;
+// Setter for highlightedDuck
+export function setHighlightedDuck(index) {
+    _highlightedDuck = index;
 }
 
 export function setFieldSize(width, height) {
@@ -115,22 +115,22 @@ function draw() {
     ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
 
     // Calculate the scale factor.
-    const scaleFactor = (avatarSize * viewport.width) / _settings.viewport.width;
+    const scaleFactor = (duckSize * viewport.width) / _settings.viewport.width;
 
-    // Draw dead avatars first.
-    const avatars = [];
-    for (const avatar of Pond.avatars) {
-        if (avatar.dead) {
-            avatars.unshift(avatar);
+    // Draw dead ducks first.
+    const ducks = [];
+    for (const duck of Pond.ducks) {
+        if (duck.dead) {
+            ducks.unshift(duck);
         } else {
-            avatars.push(avatar);
+            ducks.push(duck);
         }
     }
 
-    // Draw avatars.
-    avatars.forEach((avatar) => {
-        // Highlight is the avatar is highlighted.
-        drawAvatar(ctx, avatar, avatar.id === _highlightedAvatar, scaleFactor);
+    // Draw ducks.
+    ducks.forEach((duck) => {
+        // Highlight is the duck is highlighted.
+        drawDuck(ctx, duck, duck.id === _highlightedDuck, scaleFactor);
     });
 
     // Draw the missiles.
@@ -140,18 +140,18 @@ function draw() {
 
     // Draw events.
     for (const event of Battle.events) {
-        const avatar = event.avatar;
+        const duck = event.duck;
         if (event.type === 'CRASH') {
-            const lastCrash = crashLog.get(avatar.id);
+            const lastCrash = crashLog.get(duck.id);
             if (!lastCrash || lastCrash + 100 < Date.now()) {
                 // Play the crash sound.
                 Audio.playAudio('whack', event.damage / Battle.collisionDamage);
                 // Add the time to the crash log.
-                crashLog.set(avatar.id, Date.now());
+                crashLog.set(duck.id, Date.now());
             }
         } else if (event.type === 'SCAN') {
             // Draw a scan beam.
-            drawBeam(ctx, event, avatar);
+            drawBeam(ctx, event, duck);
         } else if (event.type === 'BANG') {
             // Play fire sound when the cannon is fired.
             Audio.playAudio('fire');
@@ -177,29 +177,29 @@ function draw() {
     ctxViewport.drawImage(scratchCanvas, 0, 0, viewport.width, viewport.height);
 }
 
-/** Draw avatar's body and waves. */
-function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
+/** Draw duck's body and waves. */
+function drawDuck(ctx, duck, highlighted, scaleFactor) {
     // Highlight amount.
     const highlightFactor = highlighted * 0.3;
 
     ctx.save();
-    const { x, y } = canvasCoordinate(avatar.loc.x, avatar.loc.y);
+    const { x, y } = canvasCoordinate(duck.loc.x, duck.loc.y);
     ctx.translate(x, y);
 
-    const colour = avatar.colour;
-    if (avatar.dead) {
+    const colour = duck.colour;
+    if (duck.dead) {
         ctx.globalAlpha = 0.25;
     }
 
-    // Convert avatar's facing angle into radians.
-    const radians = Utils.math.degToRad(avatar.facing);
+    // Convert duck's facing angle into radians.
+    const radians = Utils.math.degToRad(duck.facing);
 
     // Draw duck's wave.
     ctx.save();
     ctx.rotate(-radians + Math.PI / 2);
 
     // Crate an gradient.
-    const waveLength = scaleFactor * avatar.speed / 30;
+    const waveLength = scaleFactor * duck.speed / 30;
     const waveWidth = scaleFactor * 1.8;
     let gradient = ctx.createLinearGradient(waveWidth / 2, 0, waveWidth / 2, waveLength);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
@@ -212,24 +212,24 @@ function drawAvatar(ctx, avatar, highlighted, scaleFactor) {
 
     // Draw duck's body.
     drawCircle(ctx, 0, 0, scaleFactor, darkenHexColor(colour, -0.2 + highlightFactor), darkenHexColor(colour, 0.2 + highlightFactor));
-    drawCircle(ctx, 0, 0, scaleFactor / 3, darkenHexColor(_settings.avatar.circleColor, highlightFactor));
+    drawCircle(ctx, 0, 0, scaleFactor / 3, darkenHexColor(_settings.duck.circleColor, highlightFactor));
 
-    // Calculate values to draw avatar's head.
-    // Avatar head's offset.
+    // Calculate values to draw duck's head.
+    // Duck head's offset.
     const headRadialOffset = scaleFactor * 0.8;
     const headVerticalOffset = scaleFactor * 0.2;
-    // Avatar head's global position.
+    // Duck head's global position.
     const hx = Math.cos(radians) * headRadialOffset;
     const hy = -Math.sin(radians) * headRadialOffset - headVerticalOffset;
 
-    // If avatar is looking up,. draw duck bill first to draw it behind avatar's head.
-    if (avatar.facing <= 180) {
+    // If duck is looking up,. draw duck bill first to draw it behind duck's head.
+    if (duck.facing <= 180) {
         // Draw duck's bill.
         drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scaleFactor);
     }
     // Draw duck's head.
     drawCircle(ctx, hx, hy, scaleFactor / 1.8, darkenHexColor(colour, -0.5 + highlightFactor), darkenHexColor(colour, -0.2 + highlightFactor));
-    if (avatar.facing > 180) {
+    if (duck.facing > 180) {
         // Draw duck's bill.
         drawDuckBill(ctx, hx * 1.5, hy * 1.5, radians, scaleFactor);
     }
@@ -250,8 +250,8 @@ function drawDuckBill(ctx, x, y, radians, scale) {
 
 function drawEye(ctx, headX, headY, radians, scale) {
     // Get the eye color from the settings.
-    const innerColor = _settings.avatar.innerEyeColor;
-    const outerColor = _settings.avatar.outerEyeColor;
+    const innerColor = _settings.duck.innerEyeColor;
+    const outerColor = _settings.duck.outerEyeColor;
     // Convert pond angle system into html canvas coordinate system.
     radians = Math.PI * 2 - radians;
     // Get the eye angle.
@@ -328,24 +328,24 @@ function drawMissile(ctx, missile, scaleFactor) {
     ctx.beginPath();
     ctx.arc(missilePos.x, missilePos.y, scaleFactor * 0.4, 0, Math.PI * 2, true);
     ctx.closePath();
-    ctx.fillStyle = getColour(missile.avatar);
+    ctx.fillStyle = getColour(missile.duck);
     ctx.fill();
 }
 
 /** Draws a scan beam. */
-function drawBeam(ctx, event, avatar) {
+function drawBeam(ctx, event, duck) {
     const halfResolution = Math.max(event.resolution / 2, 0.5);
     const angle1 = -Utils.math.degToRad(event.degree + halfResolution);
     const angle2 = -Utils.math.degToRad(event.degree - halfResolution);
     // Begin drawing scan ray.
     ctx.beginPath();
     // Get the coordinates.
-    const { x, y } = canvasCoordinate(avatar.loc.x, avatar.loc.y);
+    const { x, y } = canvasCoordinate(duck.loc.x, duck.loc.y);
     const r = (beamLength * viewport.width) / _settings.viewport.width;
     ctx.lineTo(x + Math.cos(angle1) * r, y + Math.sin(angle1) * r);
     ctx.arc(x, y, r, angle1, angle2);
     ctx.lineTo(x, y);
-    const gradient = ctx.createRadialGradient(x, y, avatarSize / 2, x, y, r);
+    const gradient = ctx.createRadialGradient(x, y, duckSize / 2, x, y, r);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
     gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = gradient;
@@ -425,8 +425,8 @@ function drawCylinder(ctx, startX, startY, angle, length, radius) {
 
     // Set a gradient for the cylinder
     const gradient = ctx.createLinearGradient(startX, startY, endPos.x, endPos.y);
-    gradient.addColorStop(0, _settings.avatar.billColor1);
-    gradient.addColorStop(1, _settings.avatar.billColor2);
+    gradient.addColorStop(0, _settings.duck.billColor1);
+    gradient.addColorStop(1, _settings.duck.billColor2);
     ctx.fillStyle = gradient;
 
     // Fill the cylinder
@@ -441,9 +441,9 @@ function canvasCoordinate(x, y) {
     }
 }
 
-/** Get avatar's colour. */
-function getColour(avatar) {
-    return avatar.colour;
+/** Get duck's colour. */
+function getColour(duck) {
+    return duck.colour;
 }
 
 /**

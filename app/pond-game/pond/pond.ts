@@ -1,15 +1,15 @@
 import * as Battle from '@pond-core/battle.js';
 import * as Visualization from '@pond-core/visualization.js';
 import * as Transpile from '@pond-game/utils/transpile.js';
-import Avatar from '@app/types/avatar.js';
+import Duck from "@app/types/duck";
 import { PondSettings } from "@app/types/pond.types";
 
 /** Settings instance. */
 let settings_: PondSettings = new PondSettings();
-/** List of avatars to be displayed. */
-export let avatars: Avatar[] = [];
-/** Callback function called when some avatar is taken a damage. */
-let damageCallback_: ((_: Avatar[]) => void) | undefined;
+/** List of ducks to be displayed. */
+export let ducks: Duck[] = [];
+/** Callback function called when some duck is taken a damage. */
+let damageCallback_: ((_: Duck[]) => void) | undefined;
 /** Callback function called when the battle ends. */
 let gameEndCallback_: (() => void) | undefined;
 
@@ -18,7 +18,7 @@ export function init(
     scratch: HTMLCanvasElement,
     settings: PondSettings,
     gameEndCallback: () => void,
-    damageCallback?: (_: Avatar[]) => void
+    damageCallback?: (_: Duck[]) => void
 ) {
     settings_ = settings;
     // Initialize the game.
@@ -27,8 +27,8 @@ export function init(
     // Set the callback function.
     damageCallback_ = damageCallback;
     gameEndCallback_ = gameEndCallback;
-    // Update the avatar info.
-    updateAvatarInfo();
+    // Update the duck info.
+    updateDuckInfo();
 }
 
 /**
@@ -37,21 +37,21 @@ export function init(
 export function reset(settings: PondSettings) {
     settings_ = settings;
     // Remove all old ducks.
-    avatars = [];
+    ducks = [];
     // Add ducks.
-    // Deep clone the avatar data to avoid overwriting the settings by changing its property.
-    for (let avatar of settings.avatars) {
-        avatar = structuredClone(avatar);
-        avatars.push(new Avatar(avatar.id, avatar.name, avatar.loc, avatar.color, updateAvatarInfo));
+    // Deep clone the duck data to avoid overwriting the settings by changing its property.
+    for (let duck of settings.ducks) {
+        duck = structuredClone(duck);
+        ducks.push(new Duck(duck.id, duck.name, duck.loc, duck.color, updateDuckInfo));
     }
     // Save all the scripts.
-    saveAvatarScripts();
+    saveDuckScripts();
     // Reset the game.
     Battle.reset(settings);
     Visualization.reset(settings);
-    if (damageCallback_) damageCallback_(avatars);
-    // Update the avatar info.
-    updateAvatarInfo();
+    if (damageCallback_) damageCallback_(ducks);
+    // Update the duck info.
+    updateDuckInfo();
 }
 
 /**
@@ -68,8 +68,8 @@ export function start() {
     // Start the battle.
     Battle.start(endBattle);
     Visualization.start();
-    // Update the avatar info.
-    updateAvatarInfo();
+    // Update the duck info.
+    updateDuckInfo();
 }
 
 /**
@@ -80,22 +80,22 @@ export function pause() {
     console.log("Game paused.");
 }
 
-export function updateAvatarInfo() {
-    if (damageCallback_) damageCallback_(avatars);
+export function updateDuckInfo() {
+    if (damageCallback_) damageCallback_(ducks);
 }
 
 /**
- * Highlight the specified avatar.
- * @param id ID of the avatar. Note that this is not an index of the array.
+ * Highlight the specified duck.
+ * @param id ID of the duck. Note that this is not an index of the array.
  */
-export function highlightAvatar(id: number) {
-    Visualization.setHighlightedAvatar(id);
+export function highlightDuck(id: number) {
+    Visualization.setHighlightedDuck(id);
 }
 
-function saveAvatarScripts() {
-    settings_.avatars.forEach((avatar, idx) => {
-        const compiled = Transpile.transpileToEs5(avatar.script);
-        avatars[idx].setCode(avatar.script, compiled);
+function saveDuckScripts() {
+    settings_.ducks.forEach((duck, idx) => {
+        const compiled = Transpile.transpileToEs5(duck.script);
+        ducks[idx].setCode(duck.script, compiled);
     });
 }
 

@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
 // Utils
 import * as PondDataLoader from "@utils/pondDataLoader";
-import { PondSettings, AvatarData } from "@app/types/pond.types";
+import { PondSettings, DuckData } from "@app/types/pond.types";
 // UI Elements
 import PondGame from "@pond-game/pondGame";
 import SettingsView from "@pond/settingsView";
@@ -23,7 +23,7 @@ export default function Home() {
     // The settings which is currently used in the game.
     const [inGameSettings, setInGameSettings] = useState<PondSettings>(initialSettings);
     // Scripts
-    const [selectedAvatarData, setSelectedAvatarData] = useState<AvatarData>(settings.avatars[0]);
+    const [selectedDuckData, setSelectedDuckData] = useState<DuckData>(settings.ducks[0]);
     // Credit visible
     const [isCreditVisible, setCreditVisible] = useState(false);
 
@@ -59,15 +59,15 @@ export default function Home() {
         };
     }, []);
 
-    const getAvatarDataFromId = useCallback((id: number): AvatarData | undefined => {
-        return settings.avatars.filter((avatar) => avatar.id === id)[0];
-    }, [settings.avatars]);
+    const getDuckDataFromId = useCallback((id: number): DuckData | undefined => {
+        return settings.ducks.filter((duck) => duck.id === id)[0];
+    }, [settings.ducks]);
 
-    const selectAvatar = useCallback((id: number) => {
-        const avatar = getAvatarDataFromId(id);
-        if (avatar) setSelectedAvatarData(avatar);
-        else console.error(`Avatar selection failed. Avatar id: ${id}`);
-    }, [getAvatarDataFromId]);
+    const selectDuck = useCallback((id: number) => {
+        const duck = getDuckDataFromId(id);
+        if (duck) setSelectedDuckData(duck);
+        else console.error(`Duck selection failed. Duck id: ${id}`);
+    }, [getDuckDataFromId]);
 
     const updateSettings = useCallback((newSettings: PondSettings) => {
         // Clone the settings.
@@ -76,22 +76,22 @@ export default function Home() {
         setSettings(newSettings);
 
         setTimeout(() => {
-            // Set the selected avatar.
-            let avatarId = selectedAvatarData.id;
-            // If old selected avatar doesn't exist, select the first one.
-            const isIdExist = newSettings.avatars.filter((avatar) => avatar.id === avatarId).length > 0;
+            // Set the selected duck.
+            let duckId = selectedDuckData.id;
+            // If old selected duck doesn't exist, select the first one.
+            const isIdExist = newSettings.ducks.filter((duck) => duck.id === duckId).length > 0;
             if (!isIdExist) {
-                // Get the first item from avatars array.
-                const firstKey = newSettings.avatars[0].id;
-                avatarId = firstKey;
+                // Get the first item from ducks array.
+                const firstKey = newSettings.ducks[0].id;
+                duckId = firstKey;
             }
-            // Select the avatar.
-            selectAvatar(avatarId);
+            // Select the duck.
+            selectDuck(duckId);
         }, 0);
-    }, [selectedAvatarData.id, selectAvatar]);
+    }, [selectedDuckData.id, selectDuck]);
 
-    const onDocChange = useCallback((newDocument: string, avatar: AvatarData) => {
-        avatar.script = newDocument;
+    const onDocChange = useCallback((newDocument: string, duck: DuckData) => {
+        duck.script = newDocument;
     }, []);
 
     const handleUpdateInGameSettings = useCallback(() => {
@@ -148,8 +148,8 @@ export default function Home() {
                 <PondGame
                     settings={settings}
                     inGameSettings={inGameSettings}
-                    selectedAvatar={selectedAvatarData}
-                    onAvatarSelect={selectAvatar}
+                    selectedDuck={selectedDuckData}
+                    onDuckSelect={selectDuck}
                     onUpdateInGameSettings={handleUpdateInGameSettings}
                 />
                 {/* Pass the setter function of "doc" to the Editor element. */}
@@ -159,7 +159,7 @@ export default function Home() {
                     setDoc={onDocChange}
                     onToggleView={setActiveView}
                     darkMode={isDarkmode}
-                    selectedAvatarData={selectedAvatarData}
+                    selectedDuckData={selectedDuckData}
                 />
                 <SettingsView
                     className={`grow ${activeView === "editor" && "hidden"}`}

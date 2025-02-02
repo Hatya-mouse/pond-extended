@@ -2,9 +2,9 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 // Pond Game
 import * as Pond from "@pond-game/pond/pond";
-import Avatar from "@app/types/avatar";
+import Duck from "@app/types/duck";
 // Settings type
-import { AvatarData, PondSettings } from "@app/types/pond.types";
+import { DuckData, PondSettings } from "@app/types/pond.types";
 // UI Elements
 import ControlBar from "@pond/controlBar";
 import PlayerList from "@pond/playerList";
@@ -12,18 +12,18 @@ import PlayerList from "@pond/playerList";
 export default function PondGame({
     settings,
     inGameSettings,
-    selectedAvatar,
-    onAvatarSelect,
+    selectedDuck,
+    onDuckSelect,
     onUpdateInGameSettings,
 }: {
     settings: PondSettings,
     inGameSettings: PondSettings,
-    selectedAvatar: AvatarData,
+    selectedDuck: DuckData,
     /**
-     * Called when the avatar is selected.
-     * @param {number} _ ID of the selected avatar, not index.
+     * Called when the duck is selected.
+     * @param {number} _ ID of the selected duck, not index.
      */
-    onAvatarSelect: (_: number) => void,
+    onDuckSelect: (_: number) => void,
     onUpdateInGameSettings: () => void,
 }) {
     const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
@@ -37,13 +37,13 @@ export default function PondGame({
     const [started, setStarted] = useState(false);
     // Whether the game is paused.
     const [paused, setPaused] = useState(true);
-    // Avatar's current information including health.
-    const [avatarInfo, setAvatarInfo] = useState<Avatar[]>([]);
+    // Duck's current information including health.
+    const [duckInfo, setDuckInfo] = useState<Duck[]>([]);
     // Whether initialized
     const hasInit = useRef<boolean>(false);
 
-    const updateAvatarInfo = (newAvatarInfo: Avatar[]) => {
-        setAvatarInfo([...newAvatarInfo]);
+    const updateDuckInfo = (newDuckInfo: Duck[]) => {
+        setDuckInfo([...newDuckInfo]);
     };
 
     const start = useCallback(() => {
@@ -55,17 +55,17 @@ export default function PondGame({
         // Set the flags.
         setStarted(true);
         setPaused(false);
-        // Remove avatar highlight.
-        Pond.highlightAvatar(NaN);
+        // Remove duck highlight.
+        Pond.highlightDuck(NaN);
     }, [started, settings]);
 
     const pause = useCallback(() => {
         Pond.pause();
         // Set the paused flag.
         setPaused(true);
-        // Highlight the selected avatar.
-        Pond.highlightAvatar(selectedAvatar.id);
-    }, [selectedAvatar]);
+        // Highlight the selected duck.
+        Pond.highlightDuck(selectedDuck.id);
+    }, [selectedDuck]);
 
     const reset = useCallback(() => {
         // Reset the game.
@@ -73,22 +73,22 @@ export default function PondGame({
         // Set the flags.
         setStarted(false);
         setPaused(true);
-        // Highlight the selected avatar.
-        Pond.highlightAvatar(selectedAvatar.id);
-    }, [settings, selectedAvatar]);
+        // Highlight the selected duck.
+        Pond.highlightDuck(selectedDuck.id);
+    }, [settings, selectedDuck]);
 
     const onGameEnd = useCallback(() => {
         setStarted(false);
         setPaused(true);
-        // Highlight the selected avatar.
-        Pond.highlightAvatar(selectedAvatar.id);
-    }, [selectedAvatar]);
+        // Highlight the selected duck.
+        Pond.highlightDuck(selectedDuck.id);
+    }, [selectedDuck]);
 
-    const handleAvatarSelection = useCallback((id: number) => {
-        onAvatarSelect(id);
-        // Don't highlight the avatar during the game.
-        Pond.highlightAvatar(paused ? id : NaN);
-    }, [paused, onAvatarSelect]);
+    const handleDuckSelection = useCallback((id: number) => {
+        onDuckSelect(id);
+        // Don't highlight the duck during the game.
+        Pond.highlightDuck(paused ? id : NaN);
+    }, [paused, onDuckSelect]);
 
     const resizeCanvas = useCallback(() => {
         if (!canvas) return;
@@ -122,7 +122,7 @@ export default function PondGame({
 
     useEffect(() => {
         if (canvas && scratchCanvas && canvasCtx && scratchCanvasCtx) {
-            Pond.init(canvas, scratchCanvas, inGameSettings, onGameEnd, updateAvatarInfo);
+            Pond.init(canvas, scratchCanvas, inGameSettings, onGameEnd, updateDuckInfo);
         }
     }, [canvasCtx, scratchCanvasCtx, canvas, scratchCanvas, inGameSettings, onGameEnd]);
 
@@ -164,7 +164,7 @@ export default function PondGame({
                 onReset={reset}
                 isPaused={paused}
             />
-            <PlayerList avatars={avatarInfo} latestSettings={settings} onSelectAvatar={handleAvatarSelection} />
+            <PlayerList ducks={duckInfo} latestSettings={settings} onSelectDuck={handleDuckSelection} />
         </div>
     );
 }

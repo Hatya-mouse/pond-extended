@@ -1,5 +1,5 @@
 import { defaultDucks } from "@/public/duck/defaultDucks";
-import Avatar from "@app/types/avatar";
+import Duck from "@app/types/duck";
 
 export class PondSettings {
     game = {
@@ -12,23 +12,23 @@ export class PondSettings {
         height: 100,
         backgroundColor: "#527dbf",
     };
-    avatar = {
+    duck = {
         billColor1: "#ff9102",
         billColor2: "#ff7600",
         circleColor: "#222222",
         outerEyeColor: "#151515",
         innerEyeColor: "#f0f0f0",
     };
-    avatars: AvatarData[] = [];
+    ducks: DuckData[] = [];
     editor = {
         tabWidth: 2,
     };
     constructor() {
-        this.avatars = defaultDucks();
+        this.ducks = defaultDucks();
     }
 }
 
-export class AvatarData {
+export class DuckData {
     id: number;
     name: string;
     loc: { x: number, y: number };
@@ -56,7 +56,7 @@ export interface Location {
 }
 
 export interface Missile {
-    avatar: Avatar;
+    duck: Duck;
     startLoc: Location;
     endLoc: Location;
     range: number;
@@ -65,7 +65,7 @@ export interface Missile {
 
 export interface Event {
     type: 'CRASH' | 'SCAN' | 'BANG' | 'BOOM' | 'DIE';
-    avatar?: Avatar;
+    duck?: Duck;
     damage?: number;
     x?: number;
     y?: number;

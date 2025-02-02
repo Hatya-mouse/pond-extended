@@ -54,7 +54,7 @@
         "**/*.ts",
         "**/*.tsx",
         ".next/types/**/*.ts",
-        "app/types/avatar.js"
+        "app/types/duck.js"
     ],
     "exclude": [
         "node_modules"

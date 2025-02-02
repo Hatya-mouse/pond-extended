@@ -12,7 +12,7 @@ import * as esLintBrowserify from "eslint-linter-browserify";
 // Formatter WebWorker
 import { FormatRequest, FormatResponse } from "@app/utils/editorDoWork";
 // Pond Game
-import { PondSettings, AvatarData } from "@app/types/pond.types";
+import { PondSettings, DuckData } from "@app/types/pond.types";
 // Components
 import IconButton from "@components/iconButton";
 
@@ -48,26 +48,26 @@ export default function Editor({
     setDoc = () => { },
     onToggleView = () => { },
     darkMode = false,
-    selectedAvatarData,
+    selectedDuckData,
 }: {
     className?: string,
     settings: PondSettings,
-    setDoc?: (doc: string, avatar: AvatarData) => void,
+    setDoc?: (doc: string, duck: DuckData) => void,
     onToggleView?: (_: string) => void,
     darkMode?: boolean,
-    selectedAvatarData: AvatarData,
+    selectedDuckData: DuckData,
 }) {
     const worker = useRef<Worker | undefined>(undefined);
-    const [editorDoc, setEditorDoc] = useState(selectedAvatarData.script);
+    const [editorDoc, setEditorDoc] = useState(selectedDuckData.script);
 
     useEffect(() => {
-        setEditorDoc(selectedAvatarData.script);
-    }, [selectedAvatarData]);
+        setEditorDoc(selectedDuckData.script);
+    }, [selectedDuckData]);
 
     const onChange = useCallback((val: string) => {
-        setDoc(val, selectedAvatarData);
+        setDoc(val, selectedDuckData);
         setEditorDoc(val); // Update editorDoc with the new value
-    }, [setDoc, selectedAvatarData]);
+    }, [setDoc, selectedDuckData]);
 
     /** Format the script. */
     const formatScript = () => {
@@ -75,7 +75,7 @@ export default function Editor({
         if (worker.current) {
             const request: FormatRequest = {
                 order: "format",
-                doc: selectedAvatarData.script,
+                doc: selectedDuckData.script,
                 tabWidth: settings.editor.tabWidth
             };
             worker.current.postMessage(request);
@@ -85,9 +85,9 @@ export default function Editor({
     /** Called when the formatter WebWorker completes the formatting task. */
     const handleWorkerMessage = useCallback((e: MessageEvent<FormatResponse>) => {
         const { doc } = e.data;
-        setDoc(doc, selectedAvatarData);
+        setDoc(doc, selectedDuckData);
         setEditorDoc(doc); // Update editorDoc with the formatted document
-    }, [setDoc, selectedAvatarData]);
+    }, [setDoc, selectedDuckData]);
 
     // Set up the WebWorker.
     useEffect(() => {
@@ -111,12 +111,12 @@ export default function Editor({
             <div className="left-panel-header default-header select-none">
                 <div className="flex gap-2">
                     <div
-                        className="selected-avatar-label"
+                        className="selected-duck-label"
                         style={{
-                            backgroundColor: selectedAvatarData.color,
+                            backgroundColor: selectedDuckData.color,
                         }}
                     >
-                        {selectedAvatarData.name}
+                        {selectedDuckData.name}
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -126,11 +126,11 @@ export default function Editor({
             </div>
             <div className="editor-parent">
                 {/* Optimize the editor rendering */}
-                {settings.avatars.map((avatar: AvatarData) => {
-                    if (avatar.id !== selectedAvatarData.id) return null;
+                {settings.ducks.map((duck: DuckData) => {
+                    if (duck.id !== selectedDuckData.id) return null;
                     return (
                         <ReactCodeMirror
-                            key={avatar.id}
+                            key={duck.id}
                             className="visible will-change-contents"
                             value={editorDoc}
                             onChange={onChange}

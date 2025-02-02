@@ -1,11 +1,11 @@
-import { AvatarData } from "@/app/types/pond.types";
+import { DuckData } from "@/app/types/pond.types";
 
 export function defaultDucks() {
     return [
         // Player
-        new AvatarData(1, "Player", { x: 20, y: 80 }, "#ff9c00", `cannon(0, 70);`),
+        new DuckData(1, "Player", { x: 20, y: 80 }, "#ff9c00", `cannon(0, 70);`),
         // Rook
-        new AvatarData(2, "Rook", { x: 80, y: 80 }, "#da0026",
+        new DuckData(2, "Rook", { x: 80, y: 80 }, "#da0026",
             `/* rook.r  -  scans the battlefield like a rook, i.e., only 0,90,180,270 */
 /* move horizontally only, but looks horz and vertically */
 
@@ -70,7 +70,7 @@ function change() {
     drive(course, 30);
 }`),
         // Counter
-        new AvatarData(3, "Counter", { x: 20, y: 20 }, "#277d1c",
+        new DuckData(3, "Counter", { x: 20, y: 20 }, "#277d1c",
             `/* counter */
 /* scan in a counter-clockwise direction (increasing degrees) */
 /* moves when hit */
@@ -147,7 +147,7 @@ function run() {
     }
 }`),
         // Sniper
-        new AvatarData(4, "Sniper", { x: 80, y: 20 }, "#334079",
+        new DuckData(4, "Sniper", { x: 80, y: 20 }, "#334079",
             `/* sniper */
 /* strategy: since a scan of the entire battlefield can be done in 90 */
 /* degrees from a corner, sniper can scan the field quickly. */

@@ -83,17 +83,17 @@
             border: var(--border);
         }
 
-        /* Avatar settings */
-        .avatar-list-container {
+        /* Duck settings */
+        .duck-list-container {
             height: max-content;
             border: var(--border);
             border-radius: 7px;
 
-            .avatar-list {
+            .duck-list {
                 overflow-x: auto;
                 overflow-y: visible;
 
-                .avatar-list-item {
+                .duck-list-item {
                     padding: 8px 8px 8px 8px;
                     width: fit-content;
                     min-width: 100%;
@@ -154,7 +154,7 @@
     flex-grow: 1;
 }
 
-.selected-avatar-label {
+.selected-duck-label {
     padding: 0px 6px 0px 6px;
     border-radius: 6px;
     color: #fff;

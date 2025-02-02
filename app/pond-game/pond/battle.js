@@ -9,19 +9,19 @@ export var events = [];
 export var missiles = [];
 /** Time for cannon to be reloaded. */
 export var reload_time = 1;
-/** List of already dead avatars. */
-export var deadAvatars = [];
-/** Ordered list of avatar with the best avatar first. */
+/** List of already dead ducks. */
+export var deadDucks = [];
+/** Ordered list of duck with the best duck first. */
 var rank = [];
 /** Speed of missiles. */
 var missile_speed = 3;
 /** Rate of acceleration. */
-var avatarAccel = 5;
+var duckAccel = 5;
 /** Statements per frame. */
 var statementsPerFrame = 100;
-/** Speed of avatars' movement. */
-var avatarSpeed = 1;
-/** Center to center distance for avatars to collide. */
+/** Speed of ducks' movement. */
+var duckSpeed = 1;
+/** Center to center distance for ducks to collide. */
 var collisionRadius = 7;
 /** Damage from worst-case collision. */
 export var collisionDamage = 3;
@@ -33,8 +33,8 @@ var endTime = 0;
 var timeLimit = 60 * 60 * 1000;
 /** Callback function called when the battle is over. */
 var doneCallback_ = 0;
-/** Current interpreter processing avatar. */
-var currentAvatar = 0;
+/** Current interpreter processing duck. */
+var currentDuck = 0;
 /** Pond game settings. */
 var settings_ = {};
 
@@ -51,10 +51,10 @@ export function reset(settings) {
     clearTimeout(pid);
     events = [];
     missiles = [];
-    deadAvatars = [];
+    deadDucks = [];
     rank = [];
-    for (const avatar of Pond.avatars) {
-        avatar.reset();
+    for (const duck of Pond.ducks) {
+        duck.reset();
     }
 }
 
@@ -62,12 +62,12 @@ export function reset(settings) {
 export function start(doneCallback) {
     doneCallback_ = doneCallback;
     endTime = Date.now() + timeLimit;
-    for (const avatar of Pond.avatars) {
+    for (const duck of Pond.ducks) {
         try {
-            avatar.initInterpreter();
+            duck.initInterpreter();
         } catch (e) {
-            Utils.errorLog(avatar, ' fails to load: ', e);
-            avatar.die();
+            Utils.errorLog(duck, ' fails to load: ', e);
+            duck.die();
         }
     }
     update();
@@ -79,9 +79,9 @@ function update() {
     updateInterpreters();
     // Update the missile states.
     updateMissiles();
-    // Update the avatar states.
-    updateAvatars();
-    if (Pond.avatars.length <= deadAvatars.length + 1) {
+    // Update the duck states.
+    updateDucks();
+    if (Pond.ducks.length <= deadDucks.length + 1) {
         endTime = Math.min(endTime, Date.now() + 1000);
     }
     if (Date.now() > endTime) {
@@ -101,9 +101,9 @@ function stop() {
     clearTimeout(pid);
     // Add the survivors to the ranks based on their damage.
     const survivors = [];
-    for (const avatar of Pond.avatars) {
-        if (!avatar.dead) {
-            survivors.push(avatar);
+    for (const duck of Pond.ducks) {
+        if (!duck.dead) {
+            survivors.push(duck);
         }
     }
     const survivorCount = survivors.length;
@@ -124,15 +124,15 @@ function updateMissiles() {
         if (missile.range - missile.progress < missile_speed / 2) {
             // Boom.
             missiles.splice(i, 1);
-            // Damage any avatar in range.
-            for (const avatar of Pond.avatars) {
-                if (avatar.dead) {
+            // Damage any duck in range.
+            for (const duck of Pond.ducks) {
+                if (duck.dead) {
                     continue;
                 }
-                const range = Utils.math.getDistance(avatar.loc.x, avatar.loc.y, missile.endLoc.x, missile.endLoc.y);
+                const range = Utils.math.getDistance(duck.loc.x, duck.loc.y, missile.endLoc.x, missile.endLoc.y);
                 const damage = (1 - range / 4) * 10;
                 if (damage > 0) {
-                    avatar.addDamage(damage);
+                    duck.addDamage(damage);
                     maxDamage = Math.max(maxDamage, damage);
                 }
             }
@@ -146,61 +146,61 @@ function updateMissiles() {
     }
 }
 
-/** Update avatars' states. */
-function updateAvatars() {
-    // Loop around avatars.
-    for (const avatar of Pond.avatars) {
-        if (avatar.dead) {
+/** Update ducks' states. */
+function updateDucks() {
+    // Loop around ducks.
+    for (const duck of Pond.ducks) {
+        if (duck.dead) {
             continue;
         }
-        // Accelerate the avatar's speed.
-        if (avatar.speed < avatar.desiredSpeed) {
-            avatar.speed = Math.min(avatar.speed + avatarAccel, avatar.desiredSpeed);
-        } else if (avatar.speed > avatar.desiredSpeed) {
-            avatar.speed = Math.max(avatar.speed - avatarAccel, avatar.desiredSpeed);
+        // Accelerate the duck's speed.
+        if (duck.speed < duck.desiredSpeed) {
+            duck.speed = Math.min(duck.speed + duckAccel, duck.desiredSpeed);
+        } else if (duck.speed > duck.desiredSpeed) {
+            duck.speed = Math.max(duck.speed - duckAccel, duck.desiredSpeed);
         }
         // Move.
-        if (avatar.speed > 0) {
-            // Get the closest avatar.
-            const [, closestBefore] = closestNeighbour(avatar);
+        if (duck.speed > 0) {
+            // Get the closest duck.
+            const [, closestBefore] = closestNeighbour(duck);
             // Get the movement from the angle and the speed.
-            const angleRadians = Utils.math.degToRad(avatar.degree);
-            const speed = avatar.speed / 100 * avatarSpeed;
+            const angleRadians = Utils.math.degToRad(duck.degree);
+            const speed = duck.speed / 100 * duckSpeed;
             const dx = Math.cos(angleRadians) * speed;
             const dy = Math.sin(angleRadians) * speed;
-            // Move the avatar.
-            avatar.loc.x += dx;
-            avatar.loc.y += dy;
-            // Check if the avatar hit the edge.
-            if (avatar.loc.x < 0 || avatar.loc.x > settings_.viewport.width ||
-                avatar.loc.y < 0 || avatar.loc.y > settings_.viewport.height) {
-                // Clamp the location of the avatar.
-                avatar.loc.x = Utils.math.clamp(avatar.loc.x, 0, settings_.viewport.width);
-                avatar.loc.y = Utils.math.clamp(avatar.loc.y, 0, settings_.viewport.height);
-                // Calculate and give damage to the avatar.
-                const damage = avatar.speed / 100 * collisionDamage;
-                avatar.addDamage(damage);
+            // Move the duck.
+            duck.loc.x += dx;
+            duck.loc.y += dy;
+            // Check if the duck hit the edge.
+            if (duck.loc.x < 0 || duck.loc.x > settings_.viewport.width ||
+                duck.loc.y < 0 || duck.loc.y > settings_.viewport.height) {
+                // Clamp the location of the duck.
+                duck.loc.x = Utils.math.clamp(duck.loc.x, 0, settings_.viewport.width);
+                duck.loc.y = Utils.math.clamp(duck.loc.y, 0, settings_.viewport.height);
+                // Calculate and give damage to the duck.
+                const damage = duck.speed / 100 * collisionDamage;
+                duck.addDamage(damage);
                 // Set the speed to zero.
-                avatar.speed = 0;
-                avatar.desiredSpeed = 0;
+                duck.speed = 0;
+                duck.desiredSpeed = 0;
                 events.push({
                     type: 'CRASH',
-                    avatar: avatar,
+                    duck: duck,
                     damage: damage
                 });
             } else {
-                const [neighbour, closestAfter] = closestNeighbour(avatar);
+                const [neighbour, closestAfter] = closestNeighbour(duck);
                 if (closestAfter < collisionRadius && closestBefore > closestAfter) {
-                    // Collision with another avatar.
+                    // Collision with another duck.
                     // Move to the position before.
-                    avatar.loc.x -= dx;
-                    avatar.loc.y -= dy;
-                    // Calculate and give damage to the avatar.
-                    const damage = Math.max(avatar.speed, neighbour.speed) / 100 * collisionDamage;
-                    avatar.addDamage(damage);
-                    // Stop the avatar.
-                    avatar.speed = 0;
-                    avatar.desiredSpeed = 0;
+                    duck.loc.x -= dx;
+                    duck.loc.y -= dy;
+                    // Calculate and give damage to the duck.
+                    const damage = Math.max(duck.speed, neighbour.speed) / 100 * collisionDamage;
+                    duck.addDamage(damage);
+                    // Stop the duck.
+                    duck.speed = 0;
+                    duck.desiredSpeed = 0;
                     // Add the damage to the neighbour.
                     neighbour.addDamage(damage);
                     // Stop the neighbour too.
@@ -209,11 +209,11 @@ function updateAvatars() {
                     // Push the collision event.
                     events.push({
                         type: 'CRASH',
-                        avatar: avatar,
+                        duck: duck,
                         damage: damage
                     }, {
                         type: 'CRASH',
-                        avatar: neighbour,
+                        duck: neighbour,
                         damage: damage
                     });
                 }
@@ -222,35 +222,35 @@ function updateAvatars() {
     }
 }
 
-/** Update the Interpreters of each avatars. */
+/** Update the Interpreters of each ducks. */
 function updateInterpreters() {
     for (let i = 0; i < statementsPerFrame; i++) {
-        for (const avatar of Pond.avatars) {
-            if (avatar.dead) {
+        for (const duck of Pond.ducks) {
+            if (duck.dead) {
                 continue;
             }
-            currentAvatar = avatar;
+            currentDuck = duck;
             try {
-                avatar.interpreter.step();
+                duck.interpreter.step();
             } catch (e) {
-                Utils.errorLog(avatar + ' throws an error: ' + e);
-                avatar.die();
+                Utils.errorLog(duck + ' throws an error: ' + e);
+                duck.die();
             }
-            currentAvatar = null;
+            currentDuck = null;
         }
     }
 }
 
 /**
- * Get the closest avatar to the given avatar.
- * @returns {[Avatar, Number]} Returns the closest avatar and the distance to it.
+ * Get the closest duck to the given duck.
+ * @returns {[Duck, Number]} Returns the closest duck and the distance to it.
  */
-function closestNeighbour(avatar) {
+function closestNeighbour(duck) {
     let closest = null;
     let distance = Infinity;
-    for (const neighbour of Pond.avatars) {
-        if (!neighbour.dead && avatar !== neighbour) {
-            const thisDistance = Math.min(distance, Utils.math.getDistance(avatar.loc.x, avatar.loc.y, neighbour.loc.x, neighbour.loc.y));
+    for (const neighbour of Pond.ducks) {
+        if (!neighbour.dead && duck !== neighbour) {
+            const thisDistance = Math.min(distance, Utils.math.getDistance(duck.loc.x, duck.loc.y, neighbour.loc.x, neighbour.loc.y));
             if (thisDistance < distance) {
                 distance = thisDistance;
                 closest = neighbour;
@@ -262,55 +262,55 @@ function closestNeighbour(avatar) {
 
 export var initInterpreter = (interpreter, globalObject) => {
     let log = (value) => {
-        Utils.log(`${currentAvatar.name} logs: ${Number(value)}`);
+        Utils.log(`${currentDuck.name} logs: ${Number(value)}`);
     };
     wrap('log', log);
 
     let scan = (degree, resolution) => {
-        return currentAvatar.scan(degree, resolution);
+        return currentDuck.scan(degree, resolution);
     };
     wrap('scan', scan);
 
     let cannon = (degree, range) => {
-        return currentAvatar.cannon(degree, range);
+        return currentDuck.cannon(degree, range);
     };
     wrap('cannon', cannon);
 
     let drive = (degree, speed) => {
-        currentAvatar.drive(degree, speed);
+        currentDuck.drive(degree, speed);
     };
     wrap('drive', drive);
     wrap('swim', drive);
 
     let stop = () => {
-        currentAvatar.speed = 0;
-        currentAvatar.disiredSpeed = 0;
+        currentDuck.speed = 0;
+        currentDuck.disiredSpeed = 0;
     };
     wrap('stop', stop);
 
     var damage = () => {
-        return currentAvatar.damage;
+        return currentDuck.damage;
     };
     wrap('damage', damage);
 
     var health = () => {
-        return 100 - currentAvatar.damage;
+        return 100 - currentDuck.damage;
     };
     wrap('health', health);
 
     var speed = () => {
-        return currentAvatar.speed;
+        return currentDuck.speed;
     };
     wrap('speed', speed);
 
     var getX = () => {
-        return currentAvatar.loc.x;
+        return currentDuck.loc.x;
     };
     wrap('loc_x', getX);
     wrap('getX', getX);
 
     var getY = () => {
-        return currentAvatar.loc.y;
+        return currentDuck.loc.y;
     };
     wrap('loc_y', getY);
     wrap('getY', getY);

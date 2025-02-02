@@ -31,34 +31,34 @@ function validateSettings(settings: unknown): settings is PondSettings {
     if (typeof s.viewport.height !== 'number' || s.viewport.height <= 0) return false;
     if (typeof s.viewport.backgroundColor !== 'string') return false;
 
-    // Validate avatar settings
-    if (!s.avatar || typeof s.avatar !== 'object') return false;
-    if (typeof s.avatar.billColor1 !== 'string') return false;
-    if (typeof s.avatar.billColor2 !== 'string') return false;
-    if (typeof s.avatar.circleColor !== 'string') return false;
-    if (typeof s.avatar.outerEyeColor !== 'string') return false;
-    if (typeof s.avatar.innerEyeColor !== 'string') return false;
+    // Validate duck settings
+    if (!s.duck || typeof s.duck !== 'object') return false;
+    if (typeof s.duck.billColor1 !== 'string') return false;
+    if (typeof s.duck.billColor2 !== 'string') return false;
+    if (typeof s.duck.circleColor !== 'string') return false;
+    if (typeof s.duck.outerEyeColor !== 'string') return false;
+    if (typeof s.duck.innerEyeColor !== 'string') return false;
 
     // Validate editor settings
     if (!s.editor || typeof s.editor !== 'object') return false;
     if (typeof s.editor.tabWidth !== 'number' || s.editor.tabWidth <= 0) return false;
 
-    // Validate avatars array
-    if (!Array.isArray(s.avatars)) return false;
+    // Validate ducks array
+    if (!Array.isArray(s.ducks)) return false;
 
-    // Validate each avatar in the array
-    return s.avatars.every(avatar => {
-        if (!avatar || typeof avatar !== 'object') return false;
+    // Validate each duck in the array
+    return s.ducks.every(duck => {
+        if (!duck || typeof duck !== 'object') return false;
 
         return (
-            typeof avatar.id === 'number' &&
-            typeof avatar.name === 'string' &&
-            typeof avatar.color === 'string' &&
-            typeof avatar.script === 'string' &&
-            avatar.loc &&
-            typeof avatar.loc === 'object' &&
-            typeof avatar.loc.x === 'number' &&
-            typeof avatar.loc.y === 'number'
+            typeof duck.id === 'number' &&
+            typeof duck.name === 'string' &&
+            typeof duck.color === 'string' &&
+            typeof duck.script === 'string' &&
+            duck.loc &&
+            typeof duck.loc === 'object' &&
+            typeof duck.loc.x === 'number' &&
+            typeof duck.loc.y === 'number'
         );
     });
 }
