@@ -100,11 +100,13 @@ export default function PondGame({
         const newWidth = canvas.clientWidth;
         const newHeight = canvas.clientHeight;
 
-        setViewportSize({ width: newWidth, height: newHeight, });
+        requestAnimationFrame(() => {
+            setViewportSize({ width: newWidth, height: newHeight, });
 
-        setTimeout(() => {
-            Pond.redraw();
-        }, 50);
+            setTimeout(() => {
+                Pond.redraw();
+            }, 50);
+        });
     }, [canvas]);
 
     useEffect(() => {

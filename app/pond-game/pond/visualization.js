@@ -261,9 +261,9 @@ function drawMissile(ctx, missile, scaleFactor) {
     const shadowPos = canvasCoordinate(0, missile.startLoc.y + dy);
     // Draw missile and its shadow.
     ctx.beginPath();
-    ctx.arc(missilePos.x, shadowPos.y, Math.max(0, 1 - parabola / 10) * scaleFactor, 0, Math.PI * 2, true);
+    ctx.arc(missilePos.x, shadowPos.y, scaleFactor * 0.5, 0, Math.PI * 2, true);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(128, 128, 128, ' + Math.max(0, 1 - parabola / 10) + ')';
+    ctx.fillStyle = `rgba(64, 64, 64, 0.3)`;
     ctx.fill();
     ctx.beginPath();
     ctx.arc(missilePos.x, missilePos.y, scaleFactor * 0.4, 0, Math.PI * 2, true);

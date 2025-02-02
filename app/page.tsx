@@ -1,11 +1,11 @@
 "use client"
 
 // React imports
-import { useCallback, useEffect, useState } from "react";
-// import dynamic from "next/dynamic";
+import { useCallback, useEffect, useState, useMemo } from "react";
 // Utils
 import * as PondDataLoader from "@utils/pondDataLoader";
 import { PondSettings, AvatarData } from "@utils/pondSettings";
+import useInit from "./hooks/useInit";
 // UI Elements
 import PondGame from "@pond-game/pondGame";
 import SettingsView from "@pond/settingsView";
@@ -14,38 +14,42 @@ import Editor from "@pond/editor";
 import CreditView from "@pond/creditView";
 
 export default function Home() {
+    // Memoize initial settings to prevent recreation on each render
+    const initialSettings = useMemo(() => new PondSettings(), []);
+
     const [activeView, setActiveView] = useState("editor");
     const [isDarkmode, setMode] = useState(false);
     // The latest settings.
-    const [settings, setSettings] = useState<PondSettings>(new PondSettings());
+    const [settings, setSettings] = useState<PondSettings>(initialSettings);
     // The settings which is currently used in the game.
-    const [inGameSettings, setInGameSettings] = useState<PondSettings>(new PondSettings());
+    const [inGameSettings, setInGameSettings] = useState<PondSettings>(initialSettings);
     // Scripts
     const [selectedAvatarData, setSelectedAvatarData] = useState<AvatarData>(settings.avatars[0]);
     // Credit visible
     const [isCreditVisible, setCreditVisible] = useState(false);
 
-    // Set up the editor's dark mode.
+    // Memoize the dark mode media query
+    const darkModeQuery = useMemo(
+        () => typeof window !== 'undefined' ? window.matchMedia("(prefers-color-scheme: dark)") : null,
+        []
+    );
+
+    // Dark mode effect
     useEffect(() => {
-        if (!window.matchMedia) return;
-        // Get is it's dark mode.
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-        // Set the initial value.
-        setMode(mediaQuery.matches);
-        // Callback function.
+        if (!darkModeQuery) return;
+
+        setMode(darkModeQuery.matches);
+
         const handleChange = (event: MediaQueryListEvent) => {
             setMode(event.matches);
         };
-        // Observe the system theme changes.
-        mediaQuery.addEventListener("change", handleChange);
-        // Clean up.
-        return () => {
-            mediaQuery.removeEventListener("change", handleChange);
-        };
-    }, []);
 
-    // Load babel from CDN.
-    useEffect(() => {
+        darkModeQuery.addEventListener("change", handleChange);
+        return () => darkModeQuery.removeEventListener("change", handleChange);
+    }, [darkModeQuery]);
+
+    // Babel loader effect
+    useInit(() => {
         const script = document.createElement("script");
         script.src = "https://unpkg.com/@babel/standalone/babel.min.js";
         script.async = true;
@@ -54,13 +58,19 @@ export default function Home() {
         return () => {
             document.body.removeChild(script);
         };
-    }, []);
+    });
 
-    const getAvatarDataFromId = (id: number): AvatarData | undefined => {
+    const getAvatarDataFromId = useCallback((id: number): AvatarData | undefined => {
         return settings.avatars.filter((avatar) => avatar.id === id)[0];
-    };
+    }, [settings.avatars]);
 
-    const updateSettings = (newSettings: PondSettings) => {
+    const selectAvatar = useCallback((id: number) => {
+        const avatar = getAvatarDataFromId(id);
+        if (avatar) setSelectedAvatarData(avatar);
+        else console.error(`Avatar selection failed. Avatar id: ${id}`);
+    }, [getAvatarDataFromId]);
+
+    const updateSettings = useCallback((newSettings: PondSettings) => {
         // Clone the settings.
         newSettings = structuredClone(newSettings);
         // Set the settings.
@@ -76,28 +86,14 @@ export default function Home() {
                 const firstKey = newSettings.avatars[0].id;
                 avatarId = firstKey;
             }
-            // Get the avatar data from the id.
-            const avatar = newSettings.avatars.filter((avatar) => avatar.id === avatarId)[0];
             // Select the avatar.
-            if (avatar) selectAvatar(avatar);
+            selectAvatar(avatarId);
         }, 0);
-    };
+    }, [selectedAvatarData.id, selectAvatar]);
 
-    const selectAvatar = (avatar: AvatarData) => {
-        if (!avatar) return;
-        setSelectedAvatarData(avatar);
-    };
-
-    const onDocChange = (newDocument: string, avatar: AvatarData) => {
-        if (!avatar) return;
+    const onDocChange = useCallback((newDocument: string, avatar: AvatarData) => {
         avatar.script = newDocument;
-    };
-
-    const handleAvatarSelection = (id: number) => {
-        const avatar = getAvatarDataFromId(id);
-        if (avatar) selectAvatar(avatar);
-        else console.error(`Avatar selection failed. Avatar id: ${id}`);
-    };
+    }, []);
 
     const handleUpdateInGameSettings = useCallback(() => {
         setInGameSettings(settings);
@@ -120,7 +116,7 @@ export default function Home() {
         }, 0);
     }, [settings]);
 
-    const handleLoadBattle = () => {
+    const handleLoadBattle = useCallback(() => {
         // Create an file input element, and click it.
         const input = document.createElement("input");
         input.type = "file";
@@ -140,11 +136,11 @@ export default function Home() {
         };
         // Click the input.
         input.click();
-    };
+    }, [updateSettings]);
 
-    const handleShowCredits = () => {
+    const handleShowCredits = useCallback(() => {
         setCreditVisible((prevValue: boolean) => !prevValue);
-    };
+    }, []);
 
     return (
         <div className={isDarkmode ? "dark" : ""}>
@@ -154,7 +150,7 @@ export default function Home() {
                     settings={settings}
                     inGameSettings={inGameSettings}
                     selectedAvatar={selectedAvatarData}
-                    onAvatarSelect={handleAvatarSelection}
+                    onAvatarSelect={selectAvatar}
                     onUpdateInGameSettings={handleUpdateInGameSettings}
                 />
                 {/* Pass the setter function of "doc" to the Editor element. */}

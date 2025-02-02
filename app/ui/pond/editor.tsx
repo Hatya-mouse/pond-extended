@@ -1,5 +1,5 @@
 // React
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useMemo } from "react";
 // CodeMirror
 import ReactCodeMirror from "@uiw/react-codemirror"
 import { basicSetup } from "codemirror";
@@ -9,8 +9,6 @@ import { CompletionContext, Completion, snippetCompletion as snip } from "@codem
 import { linter, lintGutter } from "@codemirror/lint";
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import * as esLintBrowserify from "eslint-linter-browserify";
-// CLSX
-import clsx from "clsx";
 // Formatter WebWorker
 import { FormatRequest, FormatResponse } from "@/app/utils/editorDoWork";
 // Pond Game
@@ -39,6 +37,11 @@ const cmExtensions = [
     })
 ];
 
+if (typeof window !== 'undefined') { // Check if we're running in the browser.
+    // Initialize completions.
+    initCompletions();
+}
+
 export default function Editor({
     className = "",
     settings,
@@ -54,20 +57,15 @@ export default function Editor({
     darkMode?: boolean,
     selectedAvatarData: AvatarData,
 }) {
-    // Prettier worker.
+    // Memoize worker ref to prevent unnecessary re-renders
     const worker = useRef<Worker | undefined>(undefined);
 
-    // Called when the page is loaded.
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            // Initialize completions.
-            initCompletions();
-        }
-    }, []);
-
-    // Called when the document of codemirror changed.
+    // Debounce the onChange handler to reduce frequent updates
     const onChange = useCallback((val: string) => {
-        setTimeout(() => setDoc(val, selectedAvatarData), 0);
+        const timeoutId = setTimeout(() => {
+            setDoc(val, selectedAvatarData);
+        }, 300); // Add 300ms debounce
+        return () => clearTimeout(timeoutId);
     }, [setDoc, selectedAvatarData]);
 
     /** Called when the toggle view button is pressed. */
@@ -95,22 +93,27 @@ export default function Editor({
     // Called when the page is loaded.
     // Set up the WebWorker.
     useEffect(() => {
-        // Create the WebWorker.
-        if (window.Worker && worker.current === undefined) {
-            worker.current = new Worker(new URL("@utils/editorDoWork", import.meta.url));
-            worker.current.onmessage = handleWorkerMessage;
-        }
-        return () => {
-            // If useEffect is called twice, reset the worker...
-            if (window.Worker && worker.current) {
+        if (typeof window !== "undefined") {
+            // Create the WebWorker.
+            if (window.Worker && worker.current === undefined) {
+                worker.current = new Worker(new URL("@utils/editorDoWork", import.meta.url));
                 worker.current.onmessage = handleWorkerMessage;
-                worker.current.terminate();
-                worker.current = undefined;
             }
-            // And remove the completions.
-            completions = [];
-        };
-    },);
+            return () => {
+                // If useEffect is called twice, reset the worker...
+                if (window.Worker && worker.current) {
+                    worker.current.onmessage = handleWorkerMessage;
+                    worker.current.terminate();
+                    worker.current = undefined;
+                }
+                // And remove the completions.
+                completions = [];
+            };
+        }
+    }, [handleWorkerMessage]);
+
+    // Memoize the extensions array to prevent recreation on each render
+    const memoizedExtensions = useMemo(() => cmExtensions, []);
 
     return (
         <div className={`${className} editor float-container`}>
@@ -132,22 +135,20 @@ export default function Editor({
                 </div>
             </div>
             <div className="editor-parent">
-                {/* CodeMirror editor comes here. */}
-                {settings.avatars.map((avatar: AvatarData) =>
-                    <ReactCodeMirror
-                        key={avatar.id}
-                        className={clsx(
-                            "transition-all duration-300 ease-in-out",
-                            avatar === selectedAvatarData ? "visible" : "hidden",
-                        )}
-                        value={avatar.script}
-                        onChange={onChange}
-                        // Pass the extensions to the CodeMirror editor.
-                        extensions={cmExtensions}
-                        // Set the theme.
-                        theme={darkMode ? vscodeDark : vscodeLight}
-                    />
-                )}
+                {/* Optimize the editor rendering */}
+                {settings.avatars.map((avatar: AvatarData) => {
+                    if (avatar.id !== selectedAvatarData.id) return null;
+                    return (
+                        <ReactCodeMirror
+                            key={avatar.id}
+                            className="visible will-change-contents"
+                            value={avatar.script}
+                            onChange={onChange}
+                            extensions={memoizedExtensions}
+                            theme={darkMode ? vscodeDark : vscodeLight}
+                        />
+                    );
+                })}
             </div>
         </div>
     );

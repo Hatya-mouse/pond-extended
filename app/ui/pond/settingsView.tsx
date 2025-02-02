@@ -1,5 +1,5 @@
 // Module Imports
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { ColorResult } from "react-color";
 import clsx from "clsx";
 // UI Elements
@@ -25,102 +25,181 @@ export default function SettingsView({
 }) {
     const [tempSettings, setTempSettings] = useState(() => defaultSettings);
 
-    useEffect(() => {
-        setTempSettings(settings);
-    }, [settings]);
+    /** Change the specified property of tempSettings with debounce */
+    const updateTemp = useCallback((key: string, value: unknown) => {
+        setTempSettings(prev => ({
+            ...prev,
+            [key]: value
+        }));
+    }, []);
 
-    /** Change the specified property of tempSettings. */
-    const updateTemp = (key: string, value: unknown) => {
-        setTempSettings({
-            ...tempSettings, [key]: value
-        })
-    };
+    /** Remove the avatar - memoized */
+    const removeAvatar = useCallback((id: number) => {
+        setTempSettings(prev => ({
+            ...prev,
+            avatars: prev.avatars.filter((avatar) => avatar.id !== id)
+        }));
+    }, []);
 
-    /** Remove the avatar. */
-    const removeAvatar = (id: number) => {
-        updateTemp("avatars", tempSettings.avatars.filter((avatar) => avatar.id !== id));
-    };
-
-    /** Add an avatar */
-    const appendAvatar = () => {
-        setTempSettings({
-            ...tempSettings, avatars: [...tempSettings.avatars, new AvatarData(
+    /** Add an avatar - memoized */
+    const appendAvatar = useCallback(() => {
+        setTempSettings(prev => ({
+            ...prev,
+            avatars: [...prev.avatars, new AvatarData(
                 Date.now(),
-                `Avatar ${tempSettings.avatars.length + 1}`,
+                `Avatar ${prev.avatars.length + 1}`,
                 { x: 0, y: 0 },
                 "#ff9c00",
                 ""
             )]
-        });
-    };
+        }));
+    }, []);
 
-    /** Update the avatar's position. */
-    const updatePosition = (id: number, axis: "x" | "y", value: number) => {
+    /** Update the avatar's position - memoized */
+    const updatePosition = useCallback((id: number, axis: "x" | "y", value: number) => {
         if (!value) return;
-        updateTemp(
-            "avatars",
-            tempSettings.avatars.map((avatar) =>
+        setTempSettings(prev => ({
+            ...prev,
+            avatars: prev.avatars.map((avatar) =>
                 avatar.id === id
                     ? { ...avatar, loc: { ...avatar.loc, [axis]: value } }
                     : avatar
             )
-        );
-    };
+        }));
+    }, []);
 
-    /** Update the avatar's name. */
-    const updateAvatarName = (id: number, name: string) => {
-        updateTemp(
-            "avatars",
-            tempSettings.avatars.map((avatar) =>
+    /** Update the avatar's name - memoized */
+    const updateAvatarName = useCallback((id: number, name: string) => {
+        setTempSettings(prev => ({
+            ...prev,
+            avatars: prev.avatars.map((avatar) =>
                 avatar.id === id
-                    ? { ...avatar, name: name }
+                    ? { ...avatar, name }
                     : avatar
             )
-        );
-    };
+        }));
+    }, []);
 
-    /** Update the avatar's color. */
-    const updateAvatarColor = (id: number, color: string) => {
-        updateTemp(
-            "avatars",
-            tempSettings.avatars.map((avatar) =>
+    /** Update the avatar's color - memoized */
+    const updateAvatarColor = useCallback((id: number, color: string) => {
+        setTempSettings(prev => ({
+            ...prev,
+            avatars: prev.avatars.map((avatar) =>
                 avatar.id === id
-                    ? { ...avatar, color: color }
+                    ? { ...avatar, color }
                     : avatar
             )
-        );
-    };
+        }));
+    }, []);
 
-    /** Reset to the default settings. */
-    const resetToDefault = () => {
+    /** Reset to the default settings - memoized */
+    const resetToDefault = useCallback(() => {
         setTempSettings(defaultSettings);
-    };
+    }, []);
 
-    /** Cancel changes. */
+    /** Cancel changes - memoized */
     const cancelChanges = useCallback(() => {
         setTempSettings(settings);
-    }, [setTempSettings, settings]);
+    }, [settings]);
 
-    /** Save new settings. */
-    const saveChanges = () => {
+    /** Save changes - memoized */
+    const saveChanges = useCallback(() => {
         onChangeSettings(tempSettings);
-    };
+    }, [onChangeSettings, tempSettings]);
 
-    /** Called when the toggle view button is pressed. */
+    /** Called when the toggle view button is pressed */
     const handleToggleView = useCallback(() => {
         cancelChanges();
         onToggleView("editor");
     }, [onToggleView, cancelChanges]);
 
-    /** Check if we need to save. */
-    const hasToSave = useCallback(() => {
-        return settings != tempSettings;
+    /** Utility function for clamp */
+    const clamp = useCallback((v: number, min: number, max: number) => {
+        return Math.max(Math.min(v, max), min);
+    }, []);
+
+    /** Check if we need to save */
+    const hasToSave = useMemo(() => {
+        return JSON.stringify(settings) !== JSON.stringify(tempSettings);
     }, [settings, tempSettings]);
 
-    /** Utility function for clamp */
-    const clamp = (v: number, min: number, max: number) => {
-        return Math.max(Math.min(v, max), min);
-    };
+    // Memoize the avatar list to prevent unnecessary re-renders
+    const avatarList = useMemo(() => (
+        tempSettings.avatars.map((avatar, index) => (
+            <div className={clsx({
+                "avatar-list-item": true,
+                "bg-opacity-5 bg-gray-500": index % 2 > 0,
+            })} key={avatar.id}>
+                {/* Remove button */}
+                <IconButton
+                    className="fa-solid fa-minus"
+                    disabled={tempSettings.avatars.length < 3}
+                    tooltip={`Remove ${avatar.name}`}
+                    onClick={() =>
+                        removeAvatar(avatar.id)
+                    }
+                />
+                {/* Color Picker button */}
+                <ColorPickerButton
+                    color={avatar.color}
+                    onChange={(color: ColorResult) => updateAvatarColor(avatar.id, color.hex)}
+                    darkMode={darkMode}
+                />
+                {/* Name */}
+                <input
+                    className="w-48"
+                    type="text"
+                    value={avatar.name}
+                    onChange={(e) =>
+                        updateAvatarName(avatar.id, e.target.value)
+                    }
+                />
+                {/* Position */}
+                <label>
+                    X
+                    <input
+                        className="ml-2 w-48"
+                        type="number"
+                        value={avatar.loc.x}
+                        onChange={(e) =>
+                            updatePosition(avatar.id, "x", parseInt(e.target.value))
+                        }
+                        // Clamp the number when focus out.
+                        onBlur={(e) =>
+                            updatePosition(
+                                avatar.id,
+                                "x",
+                                clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
+                            )
+                        }
+                        min="0"
+                        max={tempSettings.viewport.width}
+                    />
+                </label>
+                <label>
+                    Y
+                    <input
+                        className="ml-2 mr-2 w-48"
+                        type="number"
+                        value={avatar.loc.y}
+                        onChange={(e) =>
+                            updatePosition(avatar.id, "y", parseInt(e.target.value))
+                        }
+                        // Clamp the number when focus out.
+                        onBlur={(e) =>
+                            updatePosition(
+                                avatar.id,
+                                "y",
+                                clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
+                            )
+                        }
+                        min="0"
+                        max={tempSettings.viewport.height}
+                    />
+                </label>
+            </div>
+        ))
+    ), [tempSettings.viewport, tempSettings.avatars, darkMode, clamp, removeAvatar, updateAvatarColor, updateAvatarName, updatePosition]);
 
     return (
         <div className={`settings-view float-container ${className}`}>
@@ -134,15 +213,15 @@ export default function SettingsView({
                         "text-sm",
                         "leading-7",
                         "transition-opacity",
-                        hasToSave() ? "opacity-100" : "opacity-0"
+                        hasToSave ? "opacity-100" : "opacity-0"
                     )}>
                         Changes are not saved
                     </div>
                     {/* Toggle view button */}
                     <IconButton
                         className="fa-solid fa-code left-header"
-                        tooltip={hasToSave() ? "" : "Show Editor"}
-                        disabled={hasToSave()}
+                        tooltip={hasToSave ? "" : "Show Editor"}
+                        disabled={hasToSave}
                         onClick={handleToggleView}
                     />
                 </div>
@@ -333,80 +412,7 @@ export default function SettingsView({
                     </div>
                     {/* Show Avatar list */}
                     <div className="avatar-list">
-                        {tempSettings.avatars.map((avatar, index) => (
-                            <div className={clsx({
-                                "avatar-list-item": true,
-                                "bg-opacity-5 bg-gray-500": index % 2 > 0,
-                            })} key={avatar.id}>
-                                {/* Remove button */}
-                                <IconButton
-                                    className="fa-solid fa-minus"
-                                    disabled={tempSettings.avatars.length < 3}
-                                    tooltip={`Remove ${avatar.name}`}
-                                    onClick={() =>
-                                        removeAvatar(avatar.id)
-                                    }
-                                />
-                                {/* Color Picker button */}
-                                <ColorPickerButton
-                                    color={avatar.color}
-                                    onChange={(color: ColorResult) => updateAvatarColor(avatar.id, color.hex)}
-                                    darkMode={darkMode}
-                                />
-                                {/* Name */}
-                                <input
-                                    className="w-48"
-                                    type="text"
-                                    value={avatar.name}
-                                    onChange={(e) =>
-                                        updateAvatarName(avatar.id, e.target.value)
-                                    }
-                                />
-                                {/* Position */}
-                                <label>
-                                    X
-                                    <input
-                                        className="ml-2 w-48"
-                                        type="number"
-                                        value={avatar.loc.x}
-                                        onChange={(e) =>
-                                            updatePosition(avatar.id, "x", parseInt(e.target.value))
-                                        }
-                                        // Clamp the number when focus out.
-                                        onBlur={(e) =>
-                                            updatePosition(
-                                                avatar.id,
-                                                "x",
-                                                clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
-                                            )
-                                        }
-                                        min="0"
-                                        max={tempSettings.viewport.width}
-                                    />
-                                </label>
-                                <label>
-                                    Y
-                                    <input
-                                        className="ml-2 mr-2 w-48"
-                                        type="number"
-                                        value={avatar.loc.y}
-                                        onChange={(e) =>
-                                            updatePosition(avatar.id, "y", parseInt(e.target.value))
-                                        }
-                                        // Clamp the number when focus out.
-                                        onBlur={(e) =>
-                                            updatePosition(
-                                                avatar.id,
-                                                "y",
-                                                clamp(parseInt(e.target.value ? e.target.value : "0"), parseInt(e.target.min), parseInt(e.target.max))
-                                            )
-                                        }
-                                        min="0"
-                                        max={tempSettings.viewport.height}
-                                    />
-                                </label>
-                            </div>
-                        ))}
+                        {avatarList}
                     </div>
                 </div>
 
@@ -433,8 +439,12 @@ export default function SettingsView({
                 <h2 className="mt-4">Save Settings</h2>
                 <div className="flex gap-2">
                     <button className="text-button" onClick={resetToDefault}>Reset to Default</button>
-                    <button className="text-button" onClick={cancelChanges} disabled={!hasToSave()}>Cancel Changes</button>
-                    <button className="text-button highlighted" onClick={saveChanges} disabled={!hasToSave()}>Save Changes</button>
+                    <button className="text-button" onClick={cancelChanges} disabled={!hasToSave}>Cancel Changes</button>
+                    <button
+                        className="text-button highlighted"
+                        onClick={saveChanges}
+                        disabled={!hasToSave}
+                    >Save Changes</button>
                 </div>
             </div>
         </div>
