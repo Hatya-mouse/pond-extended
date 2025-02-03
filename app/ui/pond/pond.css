@@ -227,6 +227,11 @@ pre,
     height: var(--editor-height);
 }
 
+.left-area {
+    overflow-y: auto;
+    height: var(--editor-height);
+}
+
 /* For dark mode support */
 @media (prefers-color-scheme: dark) {
 

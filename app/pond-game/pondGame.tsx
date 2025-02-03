@@ -139,32 +139,34 @@ export default function PondGame({
     }
 
     return (
-        <div className="flex flex-col gap-2 left-area select-none">
-            <canvas
-                id="scratch"
-                style={{ display: "none" }}
-                width={viewportSize.width}
-                height={viewportSize.height}
-            ></canvas>
-            <div className="float-container">
+        <div className="left-area">
+            <div className="flex flex-col gap-2 select-none">
                 <canvas
-                    id="viewport"
-                    style={{
-                        aspectRatio: `${inGameSettings.viewport.width} / ${inGameSettings.viewport.height}`,
-                        width: "400px",
-                        height: "auto",
-                    }}
+                    id="scratch"
+                    style={{ display: "none" }}
                     width={viewportSize.width}
                     height={viewportSize.height}
                 ></canvas>
+                <div className="float-container">
+                    <canvas
+                        id="viewport"
+                        style={{
+                            aspectRatio: `${inGameSettings.viewport.width} / ${inGameSettings.viewport.height}`,
+                            width: "400px",
+                            height: "auto",
+                        }}
+                        width={viewportSize.width}
+                        height={viewportSize.height}
+                    ></canvas>
+                </div>
+                <ControlBar
+                    onStart={start}
+                    onPause={pause}
+                    onReset={reset}
+                    isPaused={paused}
+                />
+                <PlayerList ducks={duckInfo} latestSettings={settings} onSelectDuck={handleDuckSelection} />
             </div>
-            <ControlBar
-                onStart={start}
-                onPause={pause}
-                onReset={reset}
-                isPaused={paused}
-            />
-            <PlayerList ducks={duckInfo} latestSettings={settings} onSelectDuck={handleDuckSelection} />
         </div>
     );
 }
