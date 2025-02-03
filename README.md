@@ -51,10 +51,10 @@ This project utilizes the following third-party libraries:
 | [Next.js](https://nextjs.org/) | React framework for production |
 | [React](https://react.dev/) | JavaScript library for building user interfaces |
 | [CodeMirror](https://codemirror.net/) | In-browser code editor |
-| [js-interpreter](https://github.com/NeilFraser/JS-Interpreter) | JavaScript interpreter for sandboxed code execution |
+| [js-interpreter](https://github.com/NeilFraser/JS-Interpreter) | JavaScript interpreter written in JavaScript |
 | [@babel/standalone](https://babeljs.io/) | Standalone build of Babel for browser usage |
 | [react-color](https://casesandberg.github.io/react-color/) | Color picker component for React |
 | [TypeScript](https://www.typescriptlang.org/) | JavaScript with syntax for types |
-| [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
+| [Tailwind CSS](https://tailwindcss.com/) | Easy-to-use CSS framework |
 
 All other dependencies can be found in the `package.json` file.
