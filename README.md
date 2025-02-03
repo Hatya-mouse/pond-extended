@@ -5,6 +5,9 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/hatya-mouse/pond-extended)
 ![GitHub deployments](https://img.shields.io/github/deployments/hatya-mouse/pond-extended/production)
 
+![Pond Extended Logo](./images/pond-logo-light.png#gh-light-mode-only "Pond Extended logo")
+![Pond Extended Logo](./images/pond-logo-dark.png#gh-dark-mode-only "Pond Extended logo")
+
 **Pond Extended** is an improved version of **Blockly Games' Pond** with additional features and enhancements.  
 Play now at [https://pond-extended.vercel.app](https://pond-extended.vercel.app/)
 
@@ -15,6 +18,17 @@ Play now at [https://pond-extended.vercel.app](https://pond-extended.vercel.app/
 - Customizable background and avatar color
 - Adjustable arena size
 - ...and more!
+
+## Screenshots
+
+| | |
+| --- | --- |
+| ![A screenshot of Pond Extended UI](./images/pond-window.png "A refined user interface") | ![A screenshot of settings view](./images/settings.png#gh-dark-mode-only "Flexible settings") |
+| A refined user interface | Flexible settings |
+
+## License
+
+This project is licensed under the [**Apache License 2.0**](LICENSE), and free to use under the terms of use.
 
 ## Credits
 
@@ -45,7 +59,3 @@ This project utilizes the following third-party libraries:
 | [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
 
 All other dependencies can be found in the `package.json` file.
-
-## License
-
-This project is licensed under the [**Apache License 2.0**](LICENSE), and free to use under the terms of use.
