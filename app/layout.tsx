@@ -9,7 +9,7 @@ import "@pond/pond.css";
 
 export const metadata: Metadata = {
     title: "Pond Extended",
-    description: "Extended Pond game which supports multiplayer and other new features.",
+    description: "Extended Blockly Games' Pond game which supports multiplayer.",
 };
 
 export default function RootLayout({
