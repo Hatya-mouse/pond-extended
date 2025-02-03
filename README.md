@@ -23,7 +23,7 @@ Play now at [https://pond-extended.vercel.app](https://pond-extended.vercel.app/
 
 | | |
 | --- | --- |
-| ![A screenshot of Pond Extended UI](./images/pond-window.png "A refined user interface") | ![A screenshot of settings view](./images/settings.png#gh-dark-mode-only "Flexible settings") |
+| ![A screenshot of Pond Extended UI](./images/pond-window.png "A refined user interface") | ![A screenshot of settings view](./images/settings.png "Flexible settings") |
 | A refined user interface | Flexible settings |
 
 ## License
