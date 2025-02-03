@@ -32,7 +32,7 @@ This project is licensed under the [**Apache License 2.0**](LICENSE), and free t
 ## Credits
 
 This project is based on [Blockly Games - Pond](https://blockly.games/pond-duck), originally developed by **Google**.  
-The original source code of Blockly Games is available under the [**Apache-2.0 License**](https://www.apache.org/licenses/LICENSE-2.0) at [Blockly Games repository](https://github.com/google/blockly-games).
+The original source code of Blockly Games is available under the [**Apache License 2.0**](https://www.apache.org/licenses/LICENSE-2.0) at [Blockly Games repository](https://github.com/google/blockly-games).
 
 This project includes sound effects from [Freesound](https://freesound.org):
 
