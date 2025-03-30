@@ -38,7 +38,7 @@ var currentDuck = 0;
 /** Pond game settings. */
 var settings_ = {};
 
-/** Initializa the battle. */
+/** Initialize the battle. */
 export function init(settings) {
     settings_ = settings;
 }
