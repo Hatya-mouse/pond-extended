@@ -8,7 +8,7 @@
 ![Pond Extended Logo](./images/pond-logo-light.png#gh-light-mode-only "Pond Extended logo")
 ![Pond Extended Logo](./images/pond-logo-dark.png#gh-dark-mode-only "Pond Extended logo")
 
-**Pond Extended** is an improved version of **Blockly Games's Pond** with additional features and enhancements.
+**Pond Extended** is an improved clone of **Blockly Games's Pond** with additional features and enhancements.
 
 Example Pond script can be found in [my repository](https://github.com/hatya-mouse/pond-examples/).
 
