@@ -1,51 +1,51 @@
 {
-    "name": "pond-extended",
-    "version": "0.1.0",
-    "private": true,
-    "author": "Hatya Mouse",
-    "license": "Apache-2.0",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/hatya-mouse/pond-extended"
-    },
-    "scripts": {
-        "dev": "next dev --turbopack",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint"
-    },
-    "dependencies": {
-        "@babel/standalone": "^7.26.6",
-        "@codemirror/autocomplete": "^6.18.4",
-        "@codemirror/lang-javascript": "^6.2.2",
-        "@codemirror/lint": "^6.8.4",
-        "@codemirror/view": "^6.36.2",
-        "@uiw/codemirror-theme-vscode": "^4.23.7",
-        "@uiw/react-codemirror": "^4.23.7",
-        "@vercel/analytics": "^1.4.1",
-        "@vercel/speed-insights": "^1.1.0",
-        "clsx": "^2.1.1",
-        "codemirror": "^6.0.1",
-        "eslint-linter-browserify": "^9.18.0",
-        "js-interpreter": "^6.0.0",
-        "next": "15.1.5",
-        "prettier": "3.4.2",
-        "react": "^19.0.0",
-        "react-color": "^2.19.3",
-        "react-dom": "^19.0.0"
-    },
-    "devDependencies": {
-        "@eslint/eslintrc": "^3",
-        "@types/lodash": "^4.17.15",
-        "@types/node": "^20",
-        "@types/react": "^19",
-        "@types/react-color": "^3.0.13",
-        "@types/react-dom": "^19",
-        "eslint": "^9",
-        "eslint-config-next": "15.1.5",
-        "eslint-import-resolver-typescript": "^3.7.0",
-        "postcss": "^8",
-        "tailwindcss": "^3.4.1",
-        "typescript": "^5"
-    }
+  "name": "pond-extended",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Hatya Mouse",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hatya-mouse/pond-extended"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@babel/standalone": "^7.26.6",
+    "@codemirror/autocomplete": "^6.18.4",
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lint": "^6.8.4",
+    "@codemirror/view": "^6.36.2",
+    "@uiw/codemirror-theme-vscode": "^4.23.7",
+    "@uiw/react-codemirror": "^4.23.7",
+    "@vercel/analytics": "^1.4.1",
+    "@vercel/speed-insights": "^1.1.0",
+    "clsx": "^2.1.1",
+    "codemirror": "^6.0.1",
+    "eslint-linter-browserify": "^9.18.0",
+    "js-interpreter": "^6.0.0",
+    "next": "15.1.11",
+    "prettier": "3.4.2",
+    "react": "^19.0.0",
+    "react-color": "^2.19.3",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/lodash": "^4.17.15",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-color": "^3.0.13",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.5",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
 }
