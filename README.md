@@ -1,4 +1,4 @@
-# Pond Extended
+# 🐦 Pond Extended
 
 ![GitHub Created At](https://img.shields.io/github/created-at/hatya-mouse/pond-extended)
 ![GitHub License](https://img.shields.io/github/license/hatya-mouse/pond-extended)
@@ -14,15 +14,15 @@ Example Pond script can be found in [my repository](https://github.com/hatya-mou
 
 Play now at [https://pond-extended.hatya.dev](https://pond-extended.hatya.dev/)
 
-## Features
+## 🎯 Features
 
 - Add, edit, or remove ducks
 - Assign custom scripts to each duck
 - Customizable background and avatar color
 - Adjustable arena size
-- ...and more!
+- Export and load the state of the game
 
-## Screenshots
+## 📷 Screenshots
 
 | A refined user interface | Flexible settings |
 | --- | --- |
@@ -61,4 +61,4 @@ This project utilizes the following third-party libraries:
 | [TypeScript](https://www.typescriptlang.org/) | JavaScript with syntax for types |
 | [Tailwind CSS](https://tailwindcss.com/) | Easy-to-use CSS framework |
 
-All other dependencies can be found in the `package.json` file.
+All dependencies can be found in the `package.json` file.
